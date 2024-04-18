@@ -1,0 +1,47 @@
+{
+	"name": "SixPack",
+	"tree": {
+		"$className": "DataModel",
+
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"src": {
+				"$path": "src/ReplicatedStorage"
+			},
+
+			"packages": {
+				"$path": "Packages"
+			}
+		},
+
+		"ServerScriptService": {
+			"$className": "ServerScriptService",
+			"src": {
+				"$path": "src/ServerScriptService"
+			}
+		},
+
+		"ServerStorage": {
+			"$className": "ServerStorage",
+			"src": {
+				"$path": "src/ServerStorage"
+			}
+		},
+
+		"StarterPlayer": {
+			"$className": "StarterPlayer",
+
+			"StarterPlayerScripts": {
+				"$className": "StarterPlayerScripts",
+
+				"src": {
+					"$path": "src/StarterPlayerScripts"
+				}
+			}
+
+		}
+
+
+
+	}
+}
