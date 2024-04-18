@@ -1,4 +1,5 @@
 --//SERVICES
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -27,16 +28,19 @@ function Tycoon.new(player: Player, plot, tycoonService, dataService)
 	self._DataService = dataService
 
 	Tycoon.Objects[player] = self
-	
+
+	self.Folder = Knit:GetAsset("TycoonTemplate")
+	self.Folder.Name = player.UserId
+	self.Folder.Parent = TYCOONS_FOLDER
 	self._Maid:GiveTask(self.Folder)
+
 	return self
 end
 
 function Tycoon:init()
 
-	self._TycoonService.Client.OnTycoonSetup:Fire(self.Player)
-	self._TycoonService.Client.OnPlayerAdded:FireAll(self.Player)
-
+	-- create tycoon just for client
+	self._TycoonService.Client.OnTycoonSetup:FireAll(self.Player, self.Folder, self.Plot)
 
 end
 
@@ -48,6 +52,7 @@ function Tycoon:destroy()
 	self._Maid:DoCleaning()
 	self._Maid = nil
 
+	Tycoon.Objects[self.Player] = nil
 	self._TycoonService.Client.OnPlayerRemoving:FireAll(self.Player)
 
 end
