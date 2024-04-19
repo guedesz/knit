@@ -227,6 +227,20 @@ function KnitClient:GetMetaData(moduleName: string)
 	return warn("Error getting meta data module")
 end
 
+function KnitClient:GetMonster(monsterName: string)
+	
+	local clientAssets = ReplicatedStorage:WaitForChild("assets")
+	local Monsters = clientAssets:WaitForChild("Monsters")
+
+	local asset = Monsters:WaitForChild(monsterName, 5)
+
+	if not asset then
+		return warn("No monster found with given name:", monsterName)
+	end
+
+	return asset:Clone()
+end
+
 function KnitClient:GetAsset(assetName : string)
 	
 	local clientAssets = ReplicatedStorage:WaitForChild("assets")
@@ -241,7 +255,9 @@ function KnitClient:GetAsset(assetName : string)
 end
 
 function KnitClient:GetModule(moduleName : string)
+
 	local firstTest = ReplicatedStorage:WaitForChild("packages"):FindFirstChild(moduleName, true)
+
 	if firstTest and firstTest:IsA('ModuleScript') then
 		return require(firstTest)
 	end
@@ -253,8 +269,14 @@ function KnitClient:GetModule(moduleName : string)
 	end
 
 	local thirdTest = ReplicatedStorage:WaitForChild("src"):FindFirstChild(moduleName, true)
+
 	if thirdTest and thirdTest:IsA('ModuleScript') then
 		return require(thirdTest)
+	end
+
+	local forthTest = ReplicatedStorage:WaitForChild("src"):WaitForChild("ClientObjects"):FindFirstChild(moduleName, true)
+	if forthTest and forthTest:IsA('ModuleScript') then
+		return require(forthTest)
 	end
 
 	return print("Error getting module", moduleName)

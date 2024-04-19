@@ -10,7 +10,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 local TycoonClient = Knit:GetModule("TycoonClient")
 
 -- // KNIT SERVICES & CONTROLLERS
-local TycoonService, DataController
+local TycoonService, DataController, LevelService
 -- // CONSTS
 
 
@@ -24,12 +24,13 @@ function TycoonController:KnitStart()
 	
     TycoonService = Knit.GetService("TycoonService")
     DataController = Knit.GetController("DataController")
-
-    TycoonController.OnTycoonSetup:Connect(function(player, tycoonFolder: Folder, plot: Folder)
+    LevelService = Knit.GetService("LevelService")
+    
+    TycoonService.OnTycoonSetup:Connect(function(player, tycoonFolder: Folder, plot: Folder)
         self:onTycoonSetup(player, tycoonFolder, plot)
     end)
 
-    TycoonController.OnPlayerRemoving:Connect(function(player)
+    TycoonService.OnPlayerRemoving:Connect(function(player)
         self:onPlayerRemoving(player)
     end)
 
@@ -47,9 +48,13 @@ function TycoonController:onPlayerRemoving(player)
     
 end
 
+function TycoonController:getTycoonByPlayer(player: Player)
+    return TycoonClient.Objects[player]
+end
+
 function TycoonController:onTycoonSetup(player, tycoon, plot)
 
-    local tycoon = TycoonClient.new(player, TycoonService, TycoonController, DataController, tycoon, plot)
+    local tycoon = TycoonClient.new(player, TycoonService, TycoonController, LevelService, DataController, tycoon, plot)
     tycoon:init()
 
 end

@@ -20,12 +20,12 @@ Object.Objects = {}
 function Object.new()
 	local self = setmetatable({}, Object)
 	self._Maid = Maid.new()
-	
+
 	return self	
 end
 
 function Object:init()
-	
+
 end
 
 function Object:destroy()

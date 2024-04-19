@@ -12,7 +12,7 @@ local Promise = Knit:GetModule("Promise")
 local Tycoon = Knit:GetModule("Tycoon")
 
 -- // KNIT SERVICES
-local PlotService, DataService
+local PlotService, DataService, LevelService
 
 -- // CONSTS
 local Connections = {}
@@ -33,6 +33,7 @@ function TycoonService:KnitStart()
 
 	PlotService = Knit.GetService("PlotService")
 	DataService = Knit.GetService("DataService")
+	LevelService = Knit.GetService("LevelService")
 
 	Players.PlayerAdded:Connect(function(player: Player)
 		self:_onPlayerAdded(player)
@@ -41,6 +42,10 @@ function TycoonService:KnitStart()
 	Players.PlayerRemoving:Connect(function(player: Player)
 		self:_onPlayerRemoving(player)
 	end)
+end
+
+function TycoonService:getTycoonByPlayer(player: Player)
+	return Tycoon.Objects[player]
 end
 
 function TycoonService:_onPlayerRemoving(player: Player)
@@ -83,7 +88,7 @@ function TycoonService:_onPlayerAdded(player: Player)
 	end
 
 	if not Tycoon.Objects[player] then
-		local tycoon = Tycoon.new(player, plot, self, DataService)
+		local tycoon = Tycoon.new(player, plot, self, DataService, LevelService)
 		tycoon:init()
 	end
 

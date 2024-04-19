@@ -19,21 +19,30 @@ local Tycoon = {}
 Tycoon.__index = Tycoon
 Tycoon.Objects = {}
 
-function Tycoon.new(player: Player, plot, tycoonService, dataService)
+function Tycoon.new(player: Player, plot, tycoonService, dataService, levelService)
 	local self = setmetatable({}, Tycoon)
 	self._Maid = Maid.new()
 	self.Player = player
 	self.Plot = plot
+
 	self._TycoonService = tycoonService
 	self._DataService = dataService
-
-	Tycoon.Objects[player] = self
+	self._LevelService = levelService
 
 	self.Folder = Knit:GetAsset("TycoonTemplate")
 	self.Folder.Name = player.UserId
 	self.Folder.Parent = TYCOONS_FOLDER
 	self._Maid:GiveTask(self.Folder)
 
+	self.Level = self._LevelService:createNewLevel(self.Player)
+	self.Level:init()
+
+	self._Maid:GiveTask(function()
+		self.Level:destroy()
+	end)
+	
+	Tycoon.Objects[player] = self
+	
 	return self
 end
 
@@ -42,10 +51,13 @@ function Tycoon:init()
 	-- create tycoon just for client
 	self._TycoonService.Client.OnTycoonSetup:FireAll(self.Player, self.Folder, self.Plot)
 
+	print("Tycoon init on server")
 end
 
 function Tycoon:teleportToTycoonSpawn()
-	
+	self.Player.Character:PivotTo(
+		self.Plot.spawn.CFrame + Vector3.new(0, self.Player.Character:GetExtentsSize().Y / 2, 0)
+	)
 end
 
 function Tycoon:destroy()
