@@ -11,7 +11,7 @@ return {
 
 	Units = {
 
-		MaxUnitsEquipped = 5,
+		MaxUnitsEquipped = 31,
 		Equippeds = {},
 		List = {},
 		

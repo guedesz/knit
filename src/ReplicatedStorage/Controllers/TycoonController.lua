@@ -34,6 +34,9 @@ function TycoonController:KnitStart()
         self:onPlayerRemoving(player)
     end)
 
+    TycoonService.OnPlayerAdded:Connect(function(player, tycoonFolder: Folder, plot: Folder)
+        self:onTycoonSetup(player, tycoonFolder, plot)
+    end)
 end
 
 function TycoonController:onPlayerRemoving(player)

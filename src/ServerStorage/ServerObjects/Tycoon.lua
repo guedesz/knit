@@ -51,6 +51,28 @@ function Tycoon:init()
 	-- create tycoon just for client
 	self._TycoonService.Client.OnTycoonSetup:FireAll(self.Player, self.Folder, self.Plot)
 
+	-- load other tycoons
+	for plr, tycoon in Tycoon.Objects do
+
+		if plr == self.Player then
+			continue
+		end
+		
+		if tycoon.IsDestroying then
+			continue
+		end
+
+		self._TycoonService.Client.OnPlayerAdded:Fire(self.Player, plr, tycoon.Folder, tycoon.Plot)
+	end
+
+	-- task.spawn(function()
+	-- 	task.wait(3)
+	-- 	while true do
+	-- 		self.Level:takeDamage(5)
+	-- 		task.wait(.5)
+	-- 	end
+	-- end)
+	
 	print("Tycoon init on server")
 end
 
@@ -64,6 +86,8 @@ function Tycoon:destroy()
 	self._Maid:DoCleaning()
 	self._Maid = nil
 
+	self.IsDestroying = true
+	
 	Tycoon.Objects[self.Player] = nil
 	self._TycoonService.Client.OnPlayerRemoving:FireAll(self.Player)
 

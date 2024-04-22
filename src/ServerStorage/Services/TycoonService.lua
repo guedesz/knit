@@ -101,7 +101,6 @@ function TycoonService:_onPlayerAdded(player: Player)
 	Connections[player]["Char"] = player.CharacterAdded:Connect(function(character)
 		self:_onCharacterAdded(player, character)
 	end)
-
 end
 
 return TycoonService

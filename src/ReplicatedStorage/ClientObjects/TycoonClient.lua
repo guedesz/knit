@@ -64,15 +64,18 @@ end
 
 function TycoonClient:spawnMonster()
 
-	self.Level:getMonster()
+	self.Level:getMonster():andThen(function(result)
 
-	if not self.Level.Monster then
-		return
-	end
-
-	self.Level.Monster.Model:PivotTo(self.MonsterSpawn.CFrame)
-	self.Level.Monster.Model.Parent = self._TycoonFolder.Monster
-
+		print(result)
+		
+		if not self.Level.Monster then
+			return
+		end
+	
+		self.Level.Monster.Model:PivotTo(self.MonsterSpawn.CFrame)
+		self.Level.Monster.Model.Parent = self._TycoonFolder.Monster
+	
+	end)
 end
 function TycoonClient:loadNPCs()
 	

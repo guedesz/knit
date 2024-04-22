@@ -9,6 +9,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 local Maid = Knit:GetModule("Maid")
 local Promise = Knit:GetModule("Promise")
 local LevelsData = Knit:GetMetaData("Levels")
+local Tween = Knit:GetModule("Tween")
 
 -- // KNIT SERVICES
 
@@ -22,9 +23,20 @@ function MonsterClient.new(player, info)
 	local self = setmetatable({}, MonsterClient)
 	self._Maid = Maid.new()
 	self.Info = info
+	self._Player = player
 
+	MonsterClient.Objects[player] = self
 
 	return self
+end
+
+function MonsterClient:onTakeDamage(damage, actual, maxHealth)
+
+	self.Info.Health = actual
+	
+	self.Billboard.Red.TextLabel.Text = self.Info.Health .."/".. self.Info.MaxHealth
+	Tween.Play(self.Billboard.Red.Green, {.25}, {Size = UDim2.fromScale(math.clamp(actual / maxHealth, 0, 1), 1)})
+
 end
 
 function MonsterClient:init()
@@ -39,20 +51,35 @@ function MonsterClient:init()
 	
 		self.Model = monster
 		
-		if not self.Monster then
+		if not monster then
 			return reject("error getting monster")
 		end
 
+		self:setupHealthBar()
+
+		self._Maid:GiveTask(self.Model)
+
 		resolve(monster)
 
-		self._Maid:GiveTask(self.Monster)
 	end)
 end
 
 
+function MonsterClient:setupHealthBar()
+	
+	self.Billboard = Knit:GetAsset("HealthBar")
+	self.Billboard.Parent = self.Model
+
+	self.Billboard.Red.TextLabel.Text = self.Info.Health .."/".. self.Info.MaxHealth
+
+	print("Billboard created", self.Billboard)
+end
+
 function MonsterClient:destroy()
 	self._Maid:DoCleaning()
 	self._Maid = nil
+
+	MonsterClient.Objects[self._Player] = nil
 end
 
 return MonsterClient

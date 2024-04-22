@@ -36,10 +36,17 @@ end
 
 function LevelClient:getMonster()
 
-	local monster = MonsterClient.new(self._Player, self.Info)
-	monster:init():await()
+	return Promise.new(function(resolve, reject)
+	
+		self:destroyMonster()
 
-	self.Monster = monster
+		local monster = MonsterClient.new(self._Player, self.Info)
+		monster:init():andThen(function(result)
+			self.Monster = monster
+		end):catch(warn):await()
+
+		resolve(true)
+	end)
 
 end
 
