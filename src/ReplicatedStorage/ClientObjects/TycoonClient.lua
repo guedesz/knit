@@ -66,8 +66,6 @@ function TycoonClient:spawnMonster()
 
 	self.Level:getMonster():andThen(function(result)
 
-		print(result)
-		
 		if not self.Level.Monster then
 			return
 		end
