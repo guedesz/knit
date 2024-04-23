@@ -7,6 +7,8 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 
 --//MODULES
 local Maid = Knit:GetModule("Maid")
+local Constants = Knit:GetModule("Constants")
+local Monster = Knit:GetModule("Monster")
 
 -- // KNIT SERVICES
 
@@ -16,13 +18,14 @@ local Level = {}
 Level.__index = Level
 Level.Objects = {}
 
-function Level.new(player: Player, levelService, monsterService, dataFolder, levelsData)
+function Level.new(player: Player, levelService, monsterService, dataService, dataFolder, levelsData)
 	local self = setmetatable({}, Level)
 	self._Maid = Maid.new()
 	self._Player = player
 	self._DataFolder = dataFolder
 	self._LevelsData = levelsData
 
+	self._DataService = dataService
 	self._MonsterService = monsterService
 	self._LevelService = levelService
 
@@ -34,45 +37,67 @@ end
 
 function Level:init()
 
-	local health = self:getHealthForWave()
-
-	self.Info = {
-		Name = self._LevelsData.Levels[math.random(1, #self._LevelsData.Levels)].Name,
-		Health = health,
-		MaxHealth = health,
-		Level = self.CurrentlyLevel,
-		Wave = self.CurrentlyWave,
-	}
-
+	self:setupMonster()
+	
+	--self:setupInfoForMonster(isBoss)
 end
 
-function Level:getHealthForWave()
+function Level:setupMonster()
 
-	local health = self._LevelsData.MONSTER_HEALTH_BASE * (self._LevelsData.HEALTH_MULTIPLIER_PER_MONSTER ^ (self.CurrentlyLevel + self.CurrentlyWave - 2))
+	if self.Monster then
+		self.Monster:destroy()
+	end
 
-    return health
+	self.Monster = Monster.new(self._Player, self._DataFolder, self._LevelsData, self._MonsterService, self.CurrentlyLevel, self.CurrentlyWave)
+	self.Monster:init()
+
 end
 
 function Level:takeDamage(damage: number)
 
-	self.Info.Health = math.clamp(self.Info.Health - damage, 0, self.Info.MaxHealth)
+	if not self.Monster then
+		return
+	end
 
-	self._MonsterService.Client.OnTakeDamage:FireAll(self._Player, damage, self.Info.Health, self.Info.MaxHealth)
+	self.Monster:takeDamage(damage)
 
-	if self.Info.Health == 0 then
+	if self.Monster.Health == 0 then
 		self:onMonsterKilled()
 	end
-	
+
 end
 
 function Level:onMonsterKilled()
-	
+
+	if not self.Monster then
+		return warn("error getting monster when killed")
+	end
+
+	if self.Monster.Wave == self._LevelsData.MOSTERS_UNTIL_BOSS + 1 then
+		self._DataService:IncrementDataValueInPath(self._Player, "Data.Level", 1)
+		self._DataService:ChangeValueOnProfile(self._Player, "Data.Wave", 0)
+		self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
+	end
+
+	if self.CurrentlyWave < self._LevelsData.MOSTERS_UNTIL_BOSS then
+		self._DataService:IncrementDataValueInPath(self._Player, "Data.Wave", 1)
+	else
+		print("[BOSS TIME]")
+		self._DataService:ChangeValueOnProfile(self._Player, "Data.Wave", self._LevelsData.MOSTERS_UNTIL_BOSS + 1 )
+	end
+
+	self.CurrentlyLevel = self._DataFolder:WaitForChild("Data"):GetAttribute("Level")
+	self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
+
+	self.Monster:destroy()
+	self.Monster = nil
+
+	self:setupMonster()
 end
 
 function Level:destroy()
 	self._Maid:DoCleaning()
 	self._Maid = nil
-
 end
 
 return Level

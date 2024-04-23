@@ -8,6 +8,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 
 --// OBJECTS
 local MonsterClient = Knit:GetModule("MonsterClient")
+local TycoonClient = Knit:GetModule("TycoonClient")
 
 -- // KNIT SERVICES & CONTROLLERS
 local MonsterService
@@ -29,6 +30,24 @@ function MonsterController:KnitStart()
         self:onTakeDamage(player, damage, actualHealth, maxHealth)
     end)
 
+    -- fired from level server object
+    MonsterService.OnMonsterKilled:Connect(function(player, info)
+        self:onMonsterKilled(player, info)
+    end)
+end
+
+function MonsterController:onMonsterKilled(player, info)
+    
+    local tycoon = TycoonClient.Objects[player]
+
+    if not tycoon then
+        return warn("no tycoon was found with given player", player)
+    end
+
+    tycoon:getNewLevel()
+
+    tycoon:spawnMonster()
+    
 end
 
 function MonsterController:onTakeDamage(player, damage, actualHealth, maxHealth)

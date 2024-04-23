@@ -68,8 +68,8 @@ function Tycoon:init()
 	-- task.spawn(function()
 	-- 	task.wait(3)
 	-- 	while true do
-	-- 		self.Level:takeDamage(5)
-	-- 		task.wait(.5)
+	-- 		self.Level:takeDamage(300)
+	-- 		task.wait(1)
 	-- 	end
 	-- end)
 	

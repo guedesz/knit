@@ -25,23 +25,6 @@ function LevelController:KnitStart()
     LevelService = Knit.GetService("LevelService")
     TycoonController = Knit.GetController("TycoonController")
 
-    LevelService.OnNewLevelCreated:Connect(function(player, info)
-        self:onNewLevelCreated(player, info)
-    end)
-end
-
-function LevelController:onNewLevelCreated(player, currentLevel)
-
-    local tycoon = TycoonController:getTycoonByPlayer(player)
-
-    if not tycoon then
-        return warn("error getting tycoon on new level created")
-    end
-
-    local newLevel = LevelClient.new(player, currentLevel)
-    tycoon.Level = newLevel
-    newLevel:init()
-        
 end
 
 return LevelController

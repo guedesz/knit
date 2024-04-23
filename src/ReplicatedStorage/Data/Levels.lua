@@ -4,6 +4,28 @@ local Levels = {
     MOSTERS_UNTIL_BOSS = 10,
     HEALTH_MULTIPLIER_PER_MONSTER = 1.2,
 
+    Bosses = {
+
+        [1] = {
+            Name = "LavaGoat",
+            Type = "Gold",
+        },
+
+        [2] = {
+            Name = "MagmaBlob",
+            Type = "Gold",
+        },
+
+        [3] = {
+            Name = "Sweghost",
+            Type = "Gems",
+        },
+
+        [4] = {
+            Name = "Tree",
+            Type = "Gems",
+        },
+    },
     Levels = {
 
         [1] = {

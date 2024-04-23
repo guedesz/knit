@@ -39,7 +39,7 @@ function LevelService:createNewLevel(player: Player)
 	local dataFolder = DataService:GetReplicationFolder(player)
 	assert(dataFolder, " error getting data folder while creating new level")
 
-	local newLevel = Level.new(player, self, MonsterService, dataFolder, LevelsData)
+	local newLevel = Level.new(player, self, MonsterService, DataService, dataFolder, LevelsData)
 
 	return newLevel
 end
@@ -48,7 +48,15 @@ function LevelService:getLevelInfoByPlayer(player: Player)
 	local tycoon = TycoonService:getTycoonByPlayer(player)
 	assert(tycoon, "error getting tycoon when level info by player")
 
-	return tycoon.Level.Info
+	local info = {}
+	info.Name = tycoon.Level.Monster.Name
+	info.Health = tycoon.Level.Monster.Health
+	info.MaxHealth = info.Health
+	info.IsBoss = tycoon.Level.Monster.IsBoss
+	info.Level = tycoon.Level.CurrentlyLevel
+	info.Wave = tycoon.Level.CurrentlyWave
+	
+	return info
 end
 
 function LevelService.Client:GetLevelInfoByPlayer(player: Player, target: Player)

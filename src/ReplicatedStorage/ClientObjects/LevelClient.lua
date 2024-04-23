@@ -61,6 +61,8 @@ function LevelClient:destroyMonster()
 end
 
 function LevelClient:destroy()
+	self:destroyMonster()
+	
 	self._Maid:DoCleaning()
 	self._Maid = nil
 

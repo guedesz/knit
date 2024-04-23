@@ -34,20 +34,7 @@ function TycoonClient.new(player, tycoonService, tycoonController, levelService,
 
 	self._DataFolder = self._DataController:GetReplicationFolder(player)
 
-	levelService:GetLevelInfoByPlayer(player):andThen(function(info)
-		
-		if not info then
-			return
-		end
-
-		self.LevelInfo = info
-
-		self.Level = LevelClient.new(player, info)
-
-		self._Maid:GiveTask(function()
-			self.Level:destroy()
-		end)
-	end):await()
+	self:getNewLevel()
 
 	TycoonClient.Objects[player] = self
 	
@@ -62,6 +49,24 @@ function TycoonClient:init()
 	print("Tycoon init on client", self)
 end
 
+function TycoonClient:getNewLevel()
+	
+	if self.Level then
+		self.Level:destroy()
+	end
+
+	self._LevelService:GetLevelInfoByPlayer(self._Player):andThen(function(info)
+		
+		if not info then
+			return
+		end
+
+		self.LevelInfo = info
+
+		self.Level = LevelClient.new(self._Player, info)
+
+	end):await()
+end
 function TycoonClient:spawnMonster()
 
 	self.Level:getMonster():andThen(function(result)
@@ -69,8 +74,8 @@ function TycoonClient:spawnMonster()
 		if not self.Level.Monster then
 			return
 		end
-	
-		self.Level.Monster.Model:PivotTo(self.MonsterSpawn.CFrame)
+		
+		self.Level.Monster.Model:PivotTo(self.MonsterSpawn.CFrame + Vector3.new(0, self.Level.Monster.Model:GetExtentsSize().Y / 2, 0))
 		self.Level.Monster.Model.Parent = self._TycoonFolder.Monster
 	
 	end)

@@ -16,6 +16,7 @@ local MonsterService = Knit.CreateService {
 	Name = "MonsterService",
 	Client = {
 		OnTakeDamage = Knit.CreateSignal(),
+		OnMonsterKilled = Knit.CreateSignal(),
 	}
 }
 function MonsterService:KnitInit()

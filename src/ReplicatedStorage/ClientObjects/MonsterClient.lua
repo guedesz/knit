@@ -27,6 +27,8 @@ function MonsterClient.new(player, info)
 	self.Info = info
 	self._Player = player
 
+	print(info)
+	
 	MonsterClient.Objects[player] = self
 
 	return self
@@ -43,7 +45,9 @@ function MonsterClient:init()
 	return Promise.new(function(resolve, reject)
 		local monster
 
-		if self.Info.Wave <= LevelsData.MOSTERS_UNTIL_BOSS then
+		if self.Info.IsBoss then
+			monster = Knit:GetBoss(self.Info.Name)
+		else
 			monster = Knit:GetMonster(self.Info.Name)
 		end
 
@@ -92,6 +96,9 @@ function MonsterClient:setupHealthBar()
 end
 
 function MonsterClient:destroy()
+
+	print("Monster destroyed")
+	
 	self._Maid:DoCleaning()
 	self._Maid = nil
 

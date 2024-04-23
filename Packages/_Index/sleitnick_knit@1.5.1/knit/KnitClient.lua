@@ -231,7 +231,6 @@ function KnitClient:GetMonster(monsterName: string)
 	
 	local clientAssets = ReplicatedStorage:WaitForChild("assets")
 	local Monsters = clientAssets:WaitForChild("Monsters")
-
 	local asset = Monsters:WaitForChild(monsterName, 5)
 
 	if not asset then
@@ -241,6 +240,18 @@ function KnitClient:GetMonster(monsterName: string)
 	return asset:Clone()
 end
 
+function KnitClient:GetBoss(bossName: string)
+	
+	local clientAssets = ReplicatedStorage:WaitForChild("assets")
+	local Monsters = clientAssets:WaitForChild("Boss")
+	local asset = Monsters:WaitForChild(bossName, 5)
+
+	if not asset then
+		return warn("No monster found with given name:", bossName)
+	end
+
+	return asset:Clone()
+end
 function KnitClient:GetAsset(assetName : string)
 	
 	local clientAssets = ReplicatedStorage:WaitForChild("assets")
