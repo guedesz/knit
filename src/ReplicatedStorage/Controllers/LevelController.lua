@@ -25,6 +25,9 @@ function LevelController:KnitStart()
     LevelService = Knit.GetService("LevelService")
     TycoonController = Knit.GetController("TycoonController")
 
+    -- LevelService.OnBossTimerCreated:Connect(function(tickStarted)
+    --     self:onBossTimerCreated(tickStarted)
+    -- end)
 end
 
 return LevelController

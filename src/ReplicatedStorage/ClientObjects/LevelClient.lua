@@ -19,11 +19,21 @@ local LevelClient = {}
 LevelClient.__index = LevelClient
 LevelClient.Objects = {}
 
-function LevelClient.new(player, info)
+function LevelClient.new(player, info, audioController, uiController, levelService)
 	local self = setmetatable({}, LevelClient)
 	self._Maid = Maid.new()
 	self._Player = player
 	self.Info = info
+	self._AudioController = audioController
+	self._UIController = uiController
+	self._LevelService = levelService
+
+	self.IsDestroying = false
+
+	if player == Knit.LocalPlayer then
+		self.LevelHud = uiController:GetGuiController("Level")
+		self.LevelHud:updateInfo(self.Info.Data.DisplayName or self.Info.Data.Name, self.Info.Level, self.Info.Wave)
+	end
 
 	LevelClient.Objects[player] = self
 	
@@ -40,10 +50,27 @@ function LevelClient:getMonster()
 	
 		self:destroyMonster()
 
-		local monster = MonsterClient.new(self._Player, self.Info)
+		local monster = MonsterClient.new(self._Player, self.Info, self._AudioController)
 		monster:init():andThen(function(result)
+
+			if not result then
+				return warn(result)
+			end
+
 			self.Monster = monster
-		end):catch(warn):await()
+
+			if self.LevelHud then
+
+				self._Maid:GiveTask(monster.OnDamage:Connect(function(actual, maxHealth)
+					self.LevelHud:updateHealthbar(actual, maxHealth)
+				end))
+
+				self.LevelHud:updateHealthbar(monster.Info.Health, monster.Info.Health)
+			end
+
+		end):catch(function(err)
+			warn(err)
+		end):await()
 
 		resolve(true)
 	end)
@@ -57,10 +84,16 @@ function LevelClient:destroyMonster()
 	end
 
 	self.Monster:destroy()
-
+	self.Monster = nil
 end
 
 function LevelClient:destroy()
+
+	if self.IsDestroying then
+		return
+	end
+	
+	self.IsDestroying = true
 	self:destroyMonster()
 	
 	self._Maid:DoCleaning()

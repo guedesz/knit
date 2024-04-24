@@ -11,6 +11,7 @@ local Maid = Knit:GetModule("Maid")
 local Promise = Knit:GetModule("Promise")
 local LevelsData = Knit:GetMetaData("Levels")
 local Tween = Knit:GetModule("Tween")
+local Signal = Knit:GetModule("Signal")
 
 -- // KNIT SERVICES
 
@@ -21,13 +22,16 @@ local MonsterClient = {}
 MonsterClient.__index = MonsterClient
 MonsterClient.Objects = {}
 
-function MonsterClient.new(player, info)
+function MonsterClient.new(player, info, audioController, levelHud)
 	local self = setmetatable({}, MonsterClient)
 	self._Maid = Maid.new()
 	self.Info = info
 	self._Player = player
+	self.OnDamage = Signal.new()
 
-	print(info)
+	self.IsDestroying = false
+
+	self._AudioController = audioController
 	
 	MonsterClient.Objects[player] = self
 
@@ -39,6 +43,12 @@ function MonsterClient:onTakeDamage(damage, actual, maxHealth)
 
 	self.Billboard.Red.TextLabel.Text = self.Info.Health .. "/" .. self.Info.MaxHealth
 	Tween.Play(self.Billboard.Red.Green, { 0.25 }, { Size = UDim2.fromScale(math.clamp(actual / maxHealth, 0, 1), 1) })
+
+	if Knit.LocalPlayer == self._Player then
+		self.OnDamage:Fire(actual, maxHealth)
+	end
+	
+
 end
 
 function MonsterClient:init()
@@ -46,9 +56,9 @@ function MonsterClient:init()
 		local monster
 
 		if self.Info.IsBoss then
-			monster = Knit:GetBoss(self.Info.Name)
+			monster = Knit:GetBoss(self.Info.Data.Name)
 		else
-			monster = Knit:GetMonster(self.Info.Name)
+			monster = Knit:GetMonster(self.Info.Data.Name)
 		end
 
 		self.Model = monster
@@ -97,8 +107,12 @@ end
 
 function MonsterClient:destroy()
 
-	print("Monster destroyed")
+	if self.IsDestroying then
+		return
+	end
 	
+	self.IsDestroying = true
+	self._AudioController:PlaySoundInPart(self.Model.PrimaryPart, "MonsterKill", {Volume = 1, RollOffMaxDistance = 100, RollOffMinDistance = 1})
 	self._Maid:DoCleaning()
 	self._Maid = nil
 

@@ -19,6 +19,9 @@ local LevelService = Knit.CreateService {
 	Name = "LevelService",
 	Client = {
 		OnNewLevelCreated = Knit.CreateSignal(),
+		OnBossTimerCreated = Knit.CreateSignal(),
+		OnBossFailedToKill = Knit.CreateSignal(),
+		OnBossSuccessKill = Knit.CreateSignal(),
 	}
 }
 
@@ -31,11 +34,11 @@ function LevelService:KnitStart()
 	DataService = Knit.GetService("DataService")
 	TycoonService = Knit.GetService("TycoonService")
 	MonsterService = Knit.GetService("MonsterService")
-	
+
 end
 
 function LevelService:createNewLevel(player: Player)
-	
+
 	local dataFolder = DataService:GetReplicationFolder(player)
 	assert(dataFolder, " error getting data folder while creating new level")
 
@@ -48,15 +51,7 @@ function LevelService:getLevelInfoByPlayer(player: Player)
 	local tycoon = TycoonService:getTycoonByPlayer(player)
 	assert(tycoon, "error getting tycoon when level info by player")
 
-	local info = {}
-	info.Name = tycoon.Level.Monster.Name
-	info.Health = tycoon.Level.Monster.Health
-	info.MaxHealth = info.Health
-	info.IsBoss = tycoon.Level.Monster.IsBoss
-	info.Level = tycoon.Level.CurrentlyLevel
-	info.Wave = tycoon.Level.CurrentlyWave
-	
-	return info
+	return tycoon.Level.Monster.Info
 end
 
 function LevelService.Client:GetLevelInfoByPlayer(player: Player, target: Player)

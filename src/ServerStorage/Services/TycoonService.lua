@@ -42,6 +42,11 @@ function TycoonService:KnitStart()
 	Players.PlayerRemoving:Connect(function(player: Player)
 		self:_onPlayerRemoving(player)
 	end)
+
+	RunService.Heartbeat:Connect(function(deltaTime)
+		workspace:SetAttribute("Tick", tick())
+	end)
+	
 end
 
 function TycoonService:getTycoonByPlayer(player: Player)

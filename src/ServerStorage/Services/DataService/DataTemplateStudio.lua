@@ -6,7 +6,7 @@ return {
 	Data = {
 		TimePlayed = 0,
 		Level = 1,
-		Wave = 9,
+		Wave = 10,
 	},
 
 	Units = {

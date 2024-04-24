@@ -39,6 +39,7 @@ function Tycoon.new(player: Player, plot, tycoonService, dataService, levelServi
 
 	self._Maid:GiveTask(function()
 		self.Level:destroy()
+		self.Level = nil
 	end)
 	
 	Tycoon.Objects[player] = self
@@ -65,13 +66,18 @@ function Tycoon:init()
 		self._TycoonService.Client.OnPlayerAdded:Fire(self.Player, plr, tycoon.Folder, tycoon.Plot)
 	end
 
-	-- task.spawn(function()
-	-- 	task.wait(3)
-	-- 	while true do
-	-- 		self.Level:takeDamage(300)
-	-- 		task.wait(1)
-	-- 	end
-	-- end)
+	task.spawn(function()
+		task.wait(3)
+		while true do
+			if self.Level then
+				self.Level:takeDamage(300)
+			else
+				break
+			end
+			
+			task.wait(1)
+		end
+	end)
 	
 	print("Tycoon init on server")
 end
@@ -89,8 +95,14 @@ function Tycoon:destroy()
 	self.IsDestroying = true
 	
 	Tycoon.Objects[self.Player] = nil
-	self._TycoonService.Client.OnPlayerRemoving:FireAll(self.Player)
 
+	self.Plot = nil
+	self._DataService = nil
+	self._LevelService = nil
+
+	self._TycoonService.Client.OnPlayerRemoving:FireAll(self.Player)
+	self._TycoonService = nil
+	self.Player = nil
 end
 
 return Tycoon

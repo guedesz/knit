@@ -48,8 +48,16 @@ function Level:setupMonster()
 		self.Monster:destroy()
 	end
 
-	self.Monster = Monster.new(self._Player, self._DataFolder, self._LevelsData, self._MonsterService, self.CurrentlyLevel, self.CurrentlyWave)
+	self.Monster = Monster.new(self._Player, self._DataFolder, self._LevelsData, self._MonsterService, self._LevelService, self.CurrentlyLevel, self.CurrentlyWave)
 	self.Monster:init()
+
+	if self.Monster.OnBossFailedToKill then
+
+		self._Maid:GiveTask(self.Monster.OnBossFailedToKill:Connect(function()
+			self:onBossFailedToKill()
+		end))
+
+	end
 
 end
 
@@ -61,10 +69,47 @@ function Level:takeDamage(damage: number)
 
 	self.Monster:takeDamage(damage)
 
-	if self.Monster.Health == 0 then
+	if self.Monster.Info.Health == 0 then
+		
+		if self.Monster.Info.IsBoss then
+			self:onBossSuccessKill()
+		end
+
 		self:onMonsterKilled()
 	end
 
+end
+
+function Level:onBossFailedToKill()
+	
+	if not self.Monster then
+		return warn("error getting monster when killed")
+	end
+
+	self._DataService:ChangeValueOnProfile(self._Player, "Data.Wave", 1)
+	self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
+
+	self.Monster:destroy()
+	self.Monster = nil
+
+	self:setupMonster()
+
+	self._LevelService.Client.OnBossFailedToKill:Fire(self._Player)
+	
+end
+
+function Level:onBossSuccessKill()
+	
+	if not self.Monster then
+		return warn("error getting monster when killed")
+	end
+
+	self._DataService:IncrementDataValueInPath(self._Player, "Data.Level", 1)
+	self._DataService:IncrementDataValueInPath(self._Player, "Data.Wave", 0)
+
+	self._LevelService.Client.OnBossSuccessKill:Fire(self._Player)
+
+	print("Boss killed")
 end
 
 function Level:onMonsterKilled()
@@ -73,7 +118,7 @@ function Level:onMonsterKilled()
 		return warn("error getting monster when killed")
 	end
 
-	if self.Monster.Wave == self._LevelsData.MOSTERS_UNTIL_BOSS + 1 then
+	if self.Monster.Info.Wave == self._LevelsData.MOSTERS_UNTIL_BOSS + 1 then
 		self._DataService:IncrementDataValueInPath(self._Player, "Data.Level", 1)
 		self._DataService:ChangeValueOnProfile(self._Player, "Data.Wave", 0)
 		self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
@@ -96,6 +141,11 @@ function Level:onMonsterKilled()
 end
 
 function Level:destroy()
+
+	if self.Monster then
+		self.Monster:destroy()
+	end
+	
 	self._Maid:DoCleaning()
 	self._Maid = nil
 end

@@ -2,27 +2,32 @@ local Levels = {
 
     MONSTER_HEALTH_BASE = 100,
     MOSTERS_UNTIL_BOSS = 10,
+    TIMER_FOR_BOSS = 5,
     HEALTH_MULTIPLIER_PER_MONSTER = 1.2,
 
     Bosses = {
 
         [1] = {
             Name = "LavaGoat",
+            DisplayName = "Boss Laval Goat",
             Type = "Gold",
         },
 
         [2] = {
             Name = "MagmaBlob",
+            DisplayName = "Boss Magma Blob",
             Type = "Gold",
         },
 
         [3] = {
             Name = "Sweghost",
+            DisplayName = "Boss Sweghost",
             Type = "Gems",
         },
 
         [4] = {
             Name = "Tree",
+            DisplayName = "Boss Tree",
             Type = "Gems",
         },
     },
@@ -40,6 +45,7 @@ local Levels = {
 
         [3] = {
             Name = "PurpleBat",
+            DisplayName = "Purple Bat",
             Type = "Gold",
         },
         
@@ -55,6 +61,7 @@ local Levels = {
 
         [6] = {
             Name = "WaterMonster",
+            DisplayName = "Water Monster",
             Type = "Gems",
         },
 

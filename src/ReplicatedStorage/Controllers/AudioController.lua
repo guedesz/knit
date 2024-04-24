@@ -1,3 +1,4 @@
+local Debris = game:GetService("Debris")
 local Knit = require(game:GetService("ReplicatedStorage"):WaitForChild("packages").Knit)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
@@ -13,6 +14,7 @@ AudioController.Assets = {
 	GoldPurchase = 7145481742,
     Error2 = 3742413227,
 
+	MonsterKill = 17274325063,
 }
 
 AudioController.LastTimePlayed = {}
@@ -55,6 +57,17 @@ end
 
 function AudioController:PlaySoundInPart(part, name, props)
 	
+	if not part then
+		return
+	end
+	
+	local Part = Instance.new("Part")
+	Part.Parent = workspace
+	Part.Transparency = 1
+	Part.CanCollide = false
+	Part.Anchored = true
+	Part.Position = part.Position
+
 	local sound = Instance.new("Sound")
 	sound.SoundId = "rbxassetid://"..self.Assets[name]
 
@@ -64,13 +77,14 @@ function AudioController:PlaySoundInPart(part, name, props)
 		end
 	end 
 
-	sound.Parent = part
+	sound.Parent = Part
 
 	sound:Play()
 	
 	sound.Ended:Once(function()
 		task.delay(1, function()
 			sound:Destroy()
+			Part:Destroy()
 		end)
 	end)
 	
