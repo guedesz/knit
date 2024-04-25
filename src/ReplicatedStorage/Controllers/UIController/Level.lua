@@ -13,7 +13,7 @@ local Promise = Knit:GetModule("Promise")
 local LevelsData = Knit:GetMetaData("Levels")
 
 -- // KNIT SERVICES
-local LevelService
+local LevelService, AudioController
 -- // CONSTS
 
 local Level = {}
@@ -27,6 +27,8 @@ function Level.new(_uiController, _dataController, _messageController)
 	self._UIController = _uiController
 	self._DataController = _dataController
 	self._MessageController = _messageController
+
+	
 	self._DataFolder = _dataController:GetReplicationFolder()
  
 	self.Type = "Hud"
@@ -59,7 +61,8 @@ end
 function Level:start()
 
 	LevelService = Knit.GetService("LevelService")
-	
+	AudioController = Knit.GetController("AudioController")
+
 	LevelService.OnBossTimerCreated:Connect(function(tickStart)
 		self:enableTimer(tickStart)
 	end)
@@ -84,11 +87,13 @@ function Level:onBossSuccessKill()
 	end
 
 	self.Gui.timer.Visible = false
+
+	self._MessageController:DisplaySoundMessage("You defeated a boss and unlocked a new level!", Color3.fromRGB(207, 103, 255), 3, "BossKill")
 end
 
 function Level:onBossFailedToKill()
 	
-	self._MessageController:DisplayErrorMessage("You need more power to defeat the boss!")
+	self._MessageController:DisplaySoundMessage("You need more power to defeat the boss!", Color3.fromRGB(255,0,0), 3, "BossFail")
 
 	if self.connection then
 		self.connection:Disconnect()

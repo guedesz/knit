@@ -6,12 +6,19 @@ return {
 	Data = {
 		TimePlayed = 0,
 		Level = 1,
-		Wave = 10,
+		Wave = 11,
+	},
+
+	Swords = {
+
+		Equipped = "",
+
+		List = {},
 	},
 
 	Units = {
 
-		MaxUnitsEquipped = 31,
+		MaxUnitsEquipped = 3,
 		Equippeds = {},
 		List = {},
 		

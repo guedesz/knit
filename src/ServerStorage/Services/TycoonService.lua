@@ -50,7 +50,19 @@ function TycoonService:KnitStart()
 end
 
 function TycoonService:getTycoonByPlayer(player: Player)
-	return Tycoon.Objects[player]
+
+	local object =  Tycoon.Objects[player]
+
+	if not object then
+		return
+	end
+
+	if object.IsDestroying then
+		return
+	end
+	
+	return object
+
 end
 
 function TycoonService:_onPlayerRemoving(player: Player)

@@ -12,25 +12,25 @@ local Maid = Knit:GetModule("Maid")
 
 -- // CONSTS
 
-local Object = {}
-Object.__index = Object
-Object.Objects = {}
+local Template = {}
+Template.__index = Template
+Template.Objects = {}
 
 
-function Object.new()
-	local self = setmetatable({}, Object)
+function Template.new()
+	local self = setmetatable({}, Template)
 	self._Maid = Maid.new()
 
 	return self	
 end
 
-function Object:init()
+function Template:init()
 
 end
 
-function Object:destroy()
+function Template:destroy()
 	self._Maid:DoCleaning()
 	self._Maid = nil
 end
 
-return Object
+return Template

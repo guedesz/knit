@@ -10,7 +10,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 local TycoonClient = Knit:GetModule("TycoonClient")
 
 -- // KNIT SERVICES & CONTROLLERS
-local TycoonService, DataController, LevelService, AudioController, UIController
+local TycoonService, DataController, LevelService, AudioController, UIController, UnitsController
 -- // CONSTS
 
 local TycoonController = Knit.CreateController({ Name = "TycoonController" })
@@ -23,7 +23,8 @@ function TycoonController:KnitStart()
 	LevelService = Knit.GetService("LevelService")
 	AudioController = Knit.GetController("AudioController")
 	UIController = Knit.GetController("UIController")
-
+	UnitsController = Knit.GetController("UnitsController")
+	
 	TycoonService.OnTycoonSetup:Connect(function(player, tycoonFolder: Folder, plot: Folder)
 		self:onTycoonSetup(player, tycoonFolder, plot)
 	end)
@@ -71,6 +72,7 @@ function TycoonController:onTycoonSetup(player, tycoon, plot)
 		DataController,
 		AudioController,
 		UIController,
+		UnitsController,
 		tycoon,
 		plot
 	)

@@ -9,6 +9,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 
 --//MODULES
 local Maid = Knit:GetModule("Maid")
+local Signal = Knit:GetModule("Signal")
 
 -- // KNIT SERVICES
 
@@ -31,6 +32,8 @@ function Tycoon.new(player: Player, plot, tycoonService, dataService, levelServi
 
 	self.Folder = Knit:GetAsset("TycoonTemplate")
 	self.Folder.Name = player.UserId
+	self.Folder:PivotTo(plot.monsterSpawn.CFrame)
+
 	self.Folder.Parent = TYCOONS_FOLDER
 	self._Maid:GiveTask(self.Folder)
 
@@ -66,19 +69,19 @@ function Tycoon:init()
 		self._TycoonService.Client.OnPlayerAdded:Fire(self.Player, plr, tycoon.Folder, tycoon.Plot)
 	end
 
-	task.spawn(function()
-		task.wait(3)
-		while true do
-			if self.Level then
-				self.Level:takeDamage(300)
-			else
-				break
-			end
-			
-			task.wait(1)
-		end
-	end)
-	
+	-- task.spawn(function()
+	-- 	task.wait(3)
+	-- 	while true do
+	-- 		if self.Level then
+	-- 			self.Level:takeDamage(300)
+	-- 		else
+	-- 			break
+	-- 		end
+		
+	-- 		task.wait(1)
+	-- 	end
+	-- end)
+
 	print("Tycoon init on server")
 end
 

@@ -30,6 +30,10 @@ function Monster.new(player, dataFolder, levelsData, monsterService, levelServic
 	self._MonsterService = monsterService
 	self._LevelService = levelService
 
+	self.OnDamageTaken = Signal.new()
+
+	self._Maid:GiveTask(self.OnDamageTaken)
+
 	self.Info = {
 		Level = level,
 		Wave = wave,
@@ -46,7 +50,9 @@ function Monster:init()
 	if self.Info.Wave == self._LevelsData.MOSTERS_UNTIL_BOSS + 1 then
 		index = "Bosses"
 		self.Info.IsBoss = true
+		
 		self.OnBossFailedToKill = Signal.new()
+		self._Maid:GiveTask(self.OnBossFailedToKill)
 
 		self:startTimer()
 	end
@@ -86,9 +92,14 @@ function Monster:startTimer()
 end
 
 function Monster:takeDamage(damage: value)
+	print(damage)
+	
 	self.Info.Health = math.round(math.clamp(self.Info.Health - damage, 0, self.Info.MaxHealth))
 
 	self._MonsterService.Client.OnTakeDamage:FireAll(self._Player, damage, self.Info.Health, self.Info.MaxHealth)
+
+	self.OnDamageTaken:Fire(damage, self.Info.Health, self.Info.MaxHealth)
+
 end
 
 function Monster:setupHealth()
@@ -96,7 +107,7 @@ function Monster:setupHealth()
 		* (self._LevelsData.HEALTH_MULTIPLIER_PER_MONSTER ^ (self.Info.Level + self.Info.Wave - 2))
 
 	if self.Info.IsBoss then
-		health *= 10000 --Constants.BOSS_HEALTH_MULTIPLIER
+		health *= Constants.BOSS_HEALTH_MULTIPLIER
 	end
 
 	self.Info.Health = math.round(health)

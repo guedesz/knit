@@ -15,6 +15,8 @@ AudioController.Assets = {
     Error2 = 3742413227,
 
 	MonsterKill = 17274325063,
+	BossKill = 3199239299,
+	BossFail = 17284893833,
 }
 
 AudioController.LastTimePlayed = {}

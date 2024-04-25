@@ -23,7 +23,7 @@ local onDataChange = Signal.new()
 --//PLACEHOLDERS
 local sh
 
-local DATABASE_NAME = "TestDB02"
+local DATABASE_NAME = "TestDB01"
 
 if not RunService:IsStudio() then
 	DATABASE_NAME = "MainGame"

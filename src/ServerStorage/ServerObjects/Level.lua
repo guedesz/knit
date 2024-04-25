@@ -56,27 +56,20 @@ function Level:setupMonster()
 		self._Maid:GiveTask(self.Monster.OnBossFailedToKill:Connect(function()
 			self:onBossFailedToKill()
 		end))
-
 	end
 
-end
+	self._Maid:GiveTask(self.Monster.OnDamageTaken:Connect(function(damage, health, maxHealth)
 
-function Level:takeDamage(damage: number)
-
-	if not self.Monster then
-		return
-	end
-
-	self.Monster:takeDamage(damage)
-
-	if self.Monster.Info.Health == 0 then
+		if health > 0 then
+			return
+		end
 		
 		if self.Monster.Info.IsBoss then
 			self:onBossSuccessKill()
 		end
 
 		self:onMonsterKilled()
-	end
+	end))
 
 end
 
