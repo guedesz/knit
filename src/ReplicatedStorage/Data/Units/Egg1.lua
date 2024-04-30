@@ -12,7 +12,7 @@ Egg1.List = {
 
     ["Maguto"] = {
         Name = "Maguto",
-        Damage = 10,
+        Damage = 50,
         Delay = 2,
         TimeSinceLastHit = 0,
         Chance = 48, -- Adjusted chance
@@ -20,8 +20,8 @@ Egg1.List = {
         Rarity = UnitsRarity.Common
     },
 
-    ["Goko"] = {
-        Name = "Goko",
+    ["Karurin"] = {
+        Name = "Karurin",
         Damage = 50,
         Delay = 5,
         TimeSinceLastHit = 0,

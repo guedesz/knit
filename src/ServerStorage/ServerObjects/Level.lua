@@ -18,7 +18,7 @@ local Level = {}
 Level.__index = Level
 Level.Objects = {}
 
-function Level.new(player: Player, levelService, monsterService, dataService, dataFolder, levelsData)
+function Level.new(player: Player, levelService, monsterService, dataService, goldService, gemsService, dataFolder, levelsData)
 	local self = setmetatable({}, Level)
 	self._Maid = Maid.new()
 	self._Player = player
@@ -28,6 +28,8 @@ function Level.new(player: Player, levelService, monsterService, dataService, da
 	self._DataService = dataService
 	self._MonsterService = monsterService
 	self._LevelService = levelService
+	self._GoldService = goldService
+	self._GemsService = gemsService
 
 	self.CurrentlyLevel = self._DataFolder:WaitForChild("Data"):GetAttribute("Level")
 	self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
@@ -64,11 +66,13 @@ function Level:setupMonster()
 			return
 		end
 		
+		local boss = false
 		if self.Monster.Info.IsBoss then
+			boss = true
 			self:onBossSuccessKill()
 		end
 
-		self:onMonsterKilled()
+		self:onMonsterKilled(boss)
 	end))
 
 end
@@ -102,7 +106,6 @@ function Level:onBossSuccessKill()
 
 	self._LevelService.Client.OnBossSuccessKill:Fire(self._Player)
 
-	print("Boss killed")
 end
 
 function Level:onMonsterKilled()
@@ -120,12 +123,19 @@ function Level:onMonsterKilled()
 	if self.CurrentlyWave < self._LevelsData.MOSTERS_UNTIL_BOSS then
 		self._DataService:IncrementDataValueInPath(self._Player, "Data.Wave", 1)
 	else
-		print("[BOSS TIME]")
 		self._DataService:ChangeValueOnProfile(self._Player, "Data.Wave", self._LevelsData.MOSTERS_UNTIL_BOSS + 1 )
 	end
 
 	self.CurrentlyLevel = self._DataFolder:WaitForChild("Data"):GetAttribute("Level")
 	self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
+
+	local reward = self.Monster:getReward()
+
+	if self.Monster.Info.Data.Type == "Gold" then
+		self._GoldService:giveGold(self._Player, reward)
+	elseif self.Monster.Info.Data.Type == "Gems" then
+		self._GemsService:giveGems(self._Player, reward)
+	end
 
 	self.Monster:destroy()
 	self.Monster = nil

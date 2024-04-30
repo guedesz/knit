@@ -1,4 +1,5 @@
 --//SERVICES
+local Debris = game:GetService("Debris")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -12,6 +13,8 @@ local Promise = Knit:GetModule("Promise")
 local LevelsData = Knit:GetMetaData("Levels")
 local Tween = Knit:GetModule("Tween")
 local Signal = Knit:GetModule("Signal")
+local DamageEffect = Knit:GetModule("DamageEffect")
+local ShakePart = Knit:GetModule("ShakePart")
 
 -- // KNIT SERVICES
 
@@ -32,7 +35,9 @@ function MonsterClient.new(player, info, audioController, levelHud)
 	self.IsDestroying = false
 
 	self._AudioController = audioController
-	
+
+	self.Shaking = false
+
 	MonsterClient.Objects[player] = self
 
 	return self
@@ -47,8 +52,15 @@ function MonsterClient:onTakeDamage(damage, actual, maxHealth)
 	if Knit.LocalPlayer == self._Player then
 		self.OnDamage:Fire(actual, maxHealth)
 	end
-	
 
+	local highLight = Instance.new("Highlight")
+	highLight.Parent = self.Model
+	highLight.OutlineColor = Color3.fromRGB(255, 0, 0)
+
+	Debris:AddItem(highLight, 0.1)
+
+	local color = Color3.new(1, 0.0117647, 0.0117647)
+	DamageEffect.createDamageEffect(self.Model, math.round(damage), color)
 end
 
 function MonsterClient:init()
@@ -103,20 +115,47 @@ function MonsterClient:setupHealthBar()
 	self.Billboard.Parent = self.Model
 
 	self.Billboard.Red.TextLabel.Text = self.Info.Health .. "/" .. self.Info.MaxHealth
+	Tween.Play(
+		self.Billboard.Red.Green,
+		{ 0.25 },
+		{ Size = UDim2.fromScale(math.clamp(self.Info.Health / self.Info.MaxHealth, 0, 1), 1) }
+	)
 end
 
-function MonsterClient:destroy()
-
+function MonsterClient:destroy(isRemoving)
 	if self.IsDestroying then
 		return
 	end
-	
-	self.IsDestroying = true
-	self._AudioController:PlaySoundInPart(self.Model.PrimaryPart, "MonsterKill", {Volume = 1, RollOffMaxDistance = 100, RollOffMinDistance = 1})
-	self._Maid:DoCleaning()
-	self._Maid = nil
 
 	MonsterClient.Objects[self._Player] = nil
+
+	if isRemoving then
+		print("rEMOVING")
+		self._Maid:DoCleaning()
+		self._Maid = nil
+		return
+	end
+
+	self.IsDestroying = true
+
+	self._AudioController:PlaySoundInPart(
+		self.Model.PrimaryPart,
+		"MonsterKill",
+		{ Volume = 1, RollOffMaxDistance = 100, RollOffMinDistance = 1 }
+	)
+
+	self.Billboard:Destroy()
+	self.Model.PrimaryPart.PetNameUI:Destroy()
+
+	local delay = 1
+
+	Tween.Play(self.Model.PrimaryPart, {delay}, {Transparency = 1})
+	Tween.Play(self.Model.PrimaryPart, {delay}, {Position = self.Model.PrimaryPart.Position + Vector3.new(0, 5, 0)})
+
+	Promise.delay(delay):andThen(function()
+		self._Maid:DoCleaning()
+		self._Maid = nil
+	end)
 end
 
 return MonsterClient

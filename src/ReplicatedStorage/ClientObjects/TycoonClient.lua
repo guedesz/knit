@@ -88,8 +88,9 @@ function TycoonClient:getNewLevel()
 
 			self._Maid:GiveTask(function()
 				
+
 				if self.Level then
-					self.Level:destroy()
+					self.Level:destroy(self.IsRemoving)
 					self.Level = nil
 				end
 
@@ -170,10 +171,25 @@ function TycoonClient:loadUnit(id)
 	
 	local unitObject = self._UnitsController:getUnitObjectById(self._Player, id)
 
-	local unit = UnitClient.new(self, self._UnitsController, self._Player, unitObject)
-	unit:init()
+	if not unitObject then
+		return
+	end
 
-	self.Units[id] = unit
+	local unitName = unitObject:GetAttribute("Name")
+
+	local module = self._UnitsController.Units[unitName]
+
+	if not module then
+		return
+	end
+
+	self.Units[id] = module.new(self, self._UnitsController, self._Player, unitObject)
+	self.Units[id]:init()
+	
+	-- local unit = UnitClient.new(self, self._UnitsController, self._Player, unitObject)
+	-- unit:init()
+
+	-- self.Units[id] = unit
 
 end
 
@@ -187,9 +203,11 @@ function TycoonClient:removeUnit(id)
 	end
 end
 
-function TycoonClient:destroy()
+function TycoonClient:destroy(isRemoving)
 
 	self.IsDestroying = true
+
+	self.IsRemoving = isRemoving
 
 	self._Maid:DoCleaning()
 	self._Maid = nil

@@ -45,7 +45,7 @@ function TycoonController:onPlayerRemoving(player)
 		return
 	end
 
-	obj:destroy()
+	obj:destroy(true)
 end
 
 function TycoonController:getTycoonByPlayer(player: Player)

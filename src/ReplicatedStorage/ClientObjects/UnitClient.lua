@@ -35,10 +35,10 @@ end
 function UnitClient:init()
 
 	self:loadModel()
-
+	self._UnitsController:loadIdleAnimation(self.Model)
+	
 	self.IsInit = true
 
-	print(self)
 end
 
 function UnitClient:loadModel()
@@ -56,7 +56,6 @@ function UnitClient:loadModel()
 
 	self.Model:PivotTo(self.PartPosition.CFrame + Vector3.new(0, self.Model:GetExtentsSize().Y / 2, 0))
 	self.Model.Parent = workspace.Units
-
 
 end
 

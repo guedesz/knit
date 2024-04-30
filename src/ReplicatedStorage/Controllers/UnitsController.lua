@@ -9,21 +9,32 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 --// OBJECTS
 
 -- // KNIT SERVICES & CONTROLLERS
-local DataController
+local DataController, AnimationController
 -- // CONSTS
 
 
 local UnitsController = Knit.CreateController{Name = "UnitsController"}
 
+UnitsController.Units = {}
+
 function UnitsController:KnitInit()
+
+	for _, module in ReplicatedStorage:WaitForChild("src"):WaitForChild("ClientObjects"):WaitForChild("Units"):GetChildren() do
+		self.Units[module.Name] = require(module)
+	end
 
 end
 
 function UnitsController:KnitStart()
 	
     DataController = Knit.GetController("DataController")
+	AnimationController = Knit.GetController("AnimationController")
+
 end
 
+function UnitsController:loadIdleAnimation(model)
+	AnimationController:play(model, "Idle")
+end
 
 function UnitsController:getEquippedUnits(player: Player)
     

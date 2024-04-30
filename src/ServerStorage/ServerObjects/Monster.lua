@@ -37,20 +37,19 @@ function Monster.new(player, dataFolder, levelsData, monsterService, levelServic
 	self.Info = {
 		Level = level,
 		Wave = wave,
-		IsBoss = false
+		IsBoss = false,
 	}
 
 	return self
 end
 
 function Monster:init()
-
 	local index = "Levels"
 
 	if self.Info.Wave == self._LevelsData.MOSTERS_UNTIL_BOSS + 1 then
 		index = "Bosses"
 		self.Info.IsBoss = true
-		
+
 		self.OnBossFailedToKill = Signal.new()
 		self._Maid:GiveTask(self.OnBossFailedToKill)
 
@@ -62,11 +61,9 @@ function Monster:init()
 	local info = self._LevelsData[index][math.random(1, #self._LevelsData[index])]
 
 	self.Info.Data = info
-
 end
 
 function Monster:startTimer()
-
 	self.Tick = workspace:GetAttribute("Tick")
 	self.Timer = 0
 
@@ -75,7 +72,6 @@ function Monster:startTimer()
 	self._LevelService.Client.OnBossTimerCreated:Fire(self._Player, self.Tick)
 
 	self._Maid:GiveTask(RunService.Heartbeat:Connect(function(deltaAmount)
-		
 		if dtAmount < 1 then
 			dtAmount += deltaAmount
 			return
@@ -87,18 +83,27 @@ function Monster:startTimer()
 		if self.Timer >= self._LevelsData.TIMER_FOR_BOSS and self.Info.Health > 0 then
 			self.OnBossFailedToKill:Fire()
 		end
-
 	end))
 end
 
 function Monster:takeDamage(damage: value)
-	print(damage)
-	
 	self.Info.Health = math.round(math.clamp(self.Info.Health - damage, 0, self.Info.MaxHealth))
 
 	self._MonsterService.Client.OnTakeDamage:FireAll(self._Player, damage, self.Info.Health, self.Info.MaxHealth)
 
 	self.OnDamageTaken:Fire(damage, self.Info.Health, self.Info.MaxHealth)
+end
+
+function Monster:getReward()
+
+	local reward = self._LevelsData.MONSTER_REWARD_BASE
+		* (self._LevelsData.HEALTH_MULTIPLIER_PER_MONSTER ^ (self.Info.Level + self.Info.Wave - 2))
+
+	if self.Info.IsBoss then
+		reward *= Constants.BOSS_HEALTH_MULTIPLIER
+	end
+
+	return math.round(reward)
 
 end
 

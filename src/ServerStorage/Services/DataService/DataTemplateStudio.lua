@@ -6,7 +6,9 @@ return {
 	Data = {
 		TimePlayed = 0,
 		Level = 1,
-		Wave = 11,
+		Wave = 1,
+		Gold = 0,
+		Gems = 0,
 	},
 
 	Swords = {

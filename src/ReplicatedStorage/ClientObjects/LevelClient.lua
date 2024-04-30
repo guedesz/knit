@@ -87,14 +87,14 @@ function LevelClient:destroyMonster()
 	self.Monster = nil
 end
 
-function LevelClient:destroy()
+function LevelClient:destroy(isRemoving)
 
 	if self.IsDestroying then
 		return
 	end
 	
 	self.IsDestroying = true
-	self:destroyMonster()
+	self:destroyMonster(isRemoving)
 	
 	self._Maid:DoCleaning()
 	self._Maid = nil

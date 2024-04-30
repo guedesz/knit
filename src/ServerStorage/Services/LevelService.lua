@@ -11,7 +11,7 @@ local Level = Knit:GetModule("Level")
 local LevelsData = Knit:GetMetaData("Levels")
 
 -- // KNIT SERVICES
-local DataService, TycoonService, MonsterService
+local DataService, TycoonService, MonsterService, GoldService, GemsService
 
 -- // CONSTS
 
@@ -34,6 +34,8 @@ function LevelService:KnitStart()
 	DataService = Knit.GetService("DataService")
 	TycoonService = Knit.GetService("TycoonService")
 	MonsterService = Knit.GetService("MonsterService")
+	GoldService = Knit.GetService("GoldService")
+	GemsService = Knit.GetService("GemsService")
 
 end
 
@@ -42,7 +44,7 @@ function LevelService:createNewLevel(player: Player)
 	local dataFolder = DataService:GetReplicationFolder(player)
 	assert(dataFolder, " error getting data folder while creating new level")
 
-	local newLevel = Level.new(player, self, MonsterService, DataService, dataFolder, LevelsData)
+	local newLevel = Level.new(player, self, MonsterService, DataService, GoldService, GemsService, dataFolder, LevelsData)
 
 	return newLevel
 end

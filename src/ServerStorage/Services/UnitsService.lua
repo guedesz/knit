@@ -35,10 +35,17 @@ function UnitsService:KnitStart()
 
 	Players.PlayerAdded:Connect(function(player)
 		task.wait(1)
+		local id = self:createUnitObject(player, "Karurin")
+		self:onUnitEquipRequest(player, id)
+		self:createServerObjectUnit(player, id)
+
 		local id = self:createUnitObject(player, "Maguto")
 		self:onUnitEquipRequest(player, id)
 		self:createServerObjectUnit(player, id)
 
+		local id = self:createUnitObject(player, "Karurin")
+		self:onUnitEquipRequest(player, id)
+		self:createServerObjectUnit(player, id)
 		-- local id = self:createUnitObject(player, "Goko")
 		-- self:onUnitEquipRequest(player, id)
 		-- self:createServerObjectUnit(player, id)

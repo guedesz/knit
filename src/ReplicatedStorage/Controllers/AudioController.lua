@@ -17,6 +17,8 @@ AudioController.Assets = {
 	MonsterKill = 17274325063,
 	BossKill = 3199239299,
 	BossFail = 17284893833,
+
+	GoldEarned = 5226834046,
 }
 
 AudioController.LastTimePlayed = {}
