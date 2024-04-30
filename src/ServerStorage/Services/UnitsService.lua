@@ -21,6 +21,10 @@ local UnitsService = Knit.CreateService {
 	Name = "UnitsService",
 	Client = {
 		OnUnitReleaseSkill = Knit.CreateSignal(),
+		OnUnitEquipped = Knit.CreateSignal(),
+		OnUnitUnequipped = Knit.CreateSignal(),
+		OnUnitRemoved = Knit.CreateSignal(),
+		OnNewUnitCreated = Knit.CreateSignal(),
 	}
 }
 
@@ -107,7 +111,7 @@ function UnitsService:createUnitObject(player: Player, unitName: string, isGolde
 
 	--self:CheckUnlockedPet(player, petName)
 
-	--self.Client.OnNewPetCreated:Fire(player, id, petName)
+	self.Client.OnNewUnitCreated:Fire(player, id, unitName)
 	
 	return id
 end

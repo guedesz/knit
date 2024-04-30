@@ -40,25 +40,29 @@ function GUITemplate.new(_uiController, _dataController)
 end
 
 function GUITemplate:init()
-
 	self.Gui = self._UIController:GetHolder("Gui", "GUITemplate")
 
 	if not self.Gui then
 		warn("error while init in: ", self.Name)
 		return false
 	end
-	
+
 	self.Holder = self.Gui.Holder
 
+	self._UIController:MouseEnterScale(self.Holder.Close, self.Holder.Close.UIScale)
+	self._UIController:MouseLeaveScale(self.Holder.Close, self.Holder.Close.UIScale)
+
+	self._UIController:Activated(self.Holder.Close, function()
+		self:close()
+	end)
+
 	self.IsInit = true
-	
+
 	return true
 end
 
 function GUITemplate:start()
-
 	self.IsStart = true
-	
 end
 function GUITemplate:open()
 	self._UIController:openGui(self.Gui)

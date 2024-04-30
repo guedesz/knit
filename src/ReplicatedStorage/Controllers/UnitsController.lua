@@ -19,10 +19,10 @@ UnitsController.Units = {}
 
 function UnitsController:KnitInit()
 
-	for _, module in ReplicatedStorage:WaitForChild("src"):WaitForChild("ClientObjects"):WaitForChild("Units"):GetChildren() do
-		self.Units[module.Name] = require(module)
-	end
+end
 
+for _, module in ReplicatedStorage:WaitForChild("src"):WaitForChild("ClientObjects"):WaitForChild("Units"):GetChildren() do
+	UnitsController.Units[module.Name] = require(module)
 end
 
 function UnitsController:KnitStart()
@@ -38,6 +38,10 @@ end
 
 function UnitsController:getEquippedUnits(player: Player)
     
+	if not DataController then
+		DataController = Knit.GetController("DataController")
+	end
+
     local dataFolder = DataController:GetReplicationFolder(player)
 
     if not dataFolder then
