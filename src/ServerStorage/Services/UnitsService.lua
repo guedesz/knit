@@ -285,6 +285,44 @@ function UnitsService:onEquipBestRequest(player: Player)
 	return true
 end
 
+function UnitsService:onUnitRemoveRequest(player: Player, petList: {string}, isTrade)
+
+	-- if not isTrade then
+	-- 	if TradeService.OnGoingTrades[player] then
+	-- 		return false, "You can't remove a pet while in a trade"
+	-- 	end
+	-- end
+	
+	assert(typeof(petList) == "table", "wrong type provided, expected 'table'")
+	
+	if #petList == 0 then
+		return false, ""
+	end
+	
+	for _, petId in petList do
+		
+		if typeof(petId) ~= "string" then
+			return false, "wrong type provived, expected 'string'"
+		end
+
+		local object = self:getUnitObjectById(player, petId)
+
+		if not object then
+			return false, "something went wrong. [pet remove request]"
+		end
+	
+		if table.find(self:getUnitsEquipped(player), petId) then
+			self:onUnitUnquipRequest(player, petId)
+		end
+	
+		DataService:DeleteDataValueInPath(player, "Units.List." .. petId)
+	end
+
+	self.Client.OnUnitRemoved:Fire(player)
+	
+	return true
+end
+
 function UnitsService.Client:OnUnquipAllRequest(player: Player)
 	return self.Server:onUnquipAllRequest(player)
 end
@@ -300,5 +338,10 @@ end
 function UnitsService.Client:OnEquipBestRequest(player: Player)
 	return self.Server:onEquipBestRequest(player)
 end
+
+function UnitsService.Client:OnUnitRemoveRequest(player: Player, petList: {string})
+	return self.Server:onUnitRemoveRequest(player, petList)
+end
+
 
 return UnitsService

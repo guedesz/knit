@@ -36,6 +36,20 @@ function UnitsController:KnitStart()
 	UnitsService.OnUnitUnequipped:Connect(function(player, id)
 		self:onUnitUnquipped(player, id)
 	end)
+
+	UnitsService.OnUnitRemoved:Connect(function(player)
+		self:onUnitRemoved(player)
+	end)
+end
+
+function UnitsController:onUnitRemoved(player)
+	local unitsGui = UIController:GetGuiController("Units")
+
+	if not unitsGui then
+		return warn("error getting units gui")
+	end
+
+	unitsGui:loadInventory()
 end
 
 function UnitsController:onUnitEquipped(player, id, unitName)
@@ -60,7 +74,6 @@ function UnitsController:onUnitEquipped(player, id, unitName)
 	end
 
 	tycoonObject:loadUnit(id)
-
 end
 
 function UnitsController:onUnitUnquipped(player, id)

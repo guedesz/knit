@@ -60,6 +60,7 @@ function Units:init()
 	self.EquippedPets = {}
 	self.EquippedFrames = {}
 	self.Connections = {}
+	self.PetsToDelete = {}
 
 	self.IsInit = true
 
@@ -92,11 +93,88 @@ function Units:start()
 		self:close()
 	end)
 
+	self:initDelete()
 	self:loadTopButtons()
 	self:loadInventory()
 
 	self.IsStart = true
 end
+
+function Units:initDelete()
+	self.IsDeleteMenuOpen = false
+
+	local deleteFrame = self.Bottom:WaitForChild("Delete")
+	local confirmFrame = self.Bottom:WaitForChild("Confirm")
+ 
+	self._UIController:MouseEnterScale(deleteFrame.Activation, deleteFrame.UIScale)
+	self._UIController:MouseLeaveScale(deleteFrame.Activation, deleteFrame.UIScale)
+
+	self._UIController:MouseEnterScale(confirmFrame.Activation, confirmFrame.UIScale)
+	self._UIController:MouseLeaveScale(confirmFrame.Activation, confirmFrame.UIScale)
+
+	self._UIController:MouseEnter(deleteFrame.Activation, function()
+		Tween.Play(deleteFrame.ImageLabel, { 0.25 }, { Rotation = -15 })
+	end, true)
+
+	self._UIController:MouseLeave(deleteFrame.Activation, function()
+		Tween.Play(deleteFrame.ImageLabel, { 0.25 }, { Rotation = 0 })
+	end, true)
+
+	self._UIController:Activated(deleteFrame.Activation, function()
+
+		if self.IsDeleteMenuOpen then
+			return self:clearDeleteMenu(confirmFrame, deleteFrame)
+		end
+
+		self:openDeleteMenu(confirmFrame, deleteFrame)
+	end)
+
+	self._UIController:Activated(confirmFrame.Activation, function()
+		local realTable = {}
+
+		for _, v in self.PetsToDelete do
+			table.insert(realTable, v.Name)
+		end
+
+		self.UnitsService:OnUnitRemoveRequest(realTable):andThen(function(result, message)
+			if #self.PetsToDelete == 0 then
+				return
+			end
+
+			if not result then
+				return self.MessageController:DisplayErrorMessage(message)
+			end
+
+			self.MessageController:DisplaySoundMessage("Successfuly removed!", Color3.fromRGB(255, 166, 0), 2, "Equip")
+		end)
+
+		self:clearDeleteMenu(confirmFrame, deleteFrame)
+	end)
+end
+
+function Units:openDeleteMenu(confirm, cancel)
+
+
+	self.PetsToDelete = {}
+
+	self.IsDeleteMenuOpen = true
+	confirm.Visible = true
+	cancel.TextLabel.Text = "Cancel"
+end
+
+function Units:clearDeleteMenu(confirm, cancel)
+
+	for _, v in self.PetsToDelete do
+		v.isRemove.Visible = false
+	end
+
+	self.PetsToDelete = {}
+
+	self.IsDeleteMenuOpen = false
+	confirm.Visible = false
+	cancel.TextLabel.Text = "Delete"
+end
+
 
 function Units:loadTopButtons()
 	self._UIController:MouseEnterScale(self.Holder.UnquipAll.Activation, self.Holder.UnquipAll.UIScale)
@@ -212,6 +290,26 @@ function Units:updateMaxEquipped(equippedPets: {})
 	local maxEquipped = self.DataFolder.Units:GetAttribute("MaxUnitsEquipped")
 	self.Bottom.MaxEquipped.TextLabel.Text = #equippedPets .. "/" .. maxEquipped
 end
+
+function Units:onPetSelectedWithDelete(petFrame: Frame)
+	local index = table.find(self.PetsToDelete, petFrame)
+
+	if index then
+		Tween.Play(petFrame.isRemove.UIScale, { 0.2 }, { Scale = 0 })
+		task.delay(0.22, function()
+			petFrame.isRemove.Visible = true
+		end)
+
+		return table.remove(self.PetsToDelete, index)
+	end
+
+	petFrame.isRemove.UIScale.Scale = 0
+	petFrame.isRemove.Visible = true
+
+	Tween.Play(petFrame.isRemove.UIScale, { 0.2 }, { Scale = 1 })
+	table.insert(self.PetsToDelete, petFrame)
+end
+
 
 function Units:loadInventory()
 	self:clearInventory()
