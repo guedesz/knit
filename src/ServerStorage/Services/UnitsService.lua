@@ -12,6 +12,8 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 local Promise = Knit:GetModule("Promise")
 local UnitsData = Knit:GetMetaData("Units")
 local Unit = Knit:GetModule("Unit")
+local GoldMachineData = Knit:GetMetaData("GoldMachine")
+local VoidMachineData = Knit:GetMetaData("VoidMachine")
 
 -- // KNIT SERVICES
 local DataService, DamageService
@@ -37,18 +39,11 @@ function UnitsService:KnitStart()
 	Players.PlayerAdded:Connect(function(player)
 		task.wait(1)
 		local id = self:createUnitObject(player, "Karurin")
-		self:onUnitEquipRequest(player, id)
 		local id = self:createUnitObject(player, "Maguto")
-		self:onUnitEquipRequest(player, id)
 		local id = self:createUnitObject(player, "Karurin")
-		self:onUnitEquipRequest(player, id)
-		-- local id = self:createUnitObject(player, "Goko")
-		-- self:onUnitEquipRequest(player, id)
-		-- self:createServerObjectUnit(player, id)
+		local id = self:createUnitObject(player, "Gokoo")
+		local id = self:createUnitObject(player, "Gokoo")
 
-		-- local id = self:createUnitObject(player, "Maguto")
-		-- self:onUnitEquipRequest(player, id)
-		-- self:createServerObjectUnit(player, id)
 	end)
 
 	Players.PlayerRemoving:Connect(function(player: Player)
@@ -262,13 +257,13 @@ function UnitsService:onEquipBestRequest(player: Player)
 		end
 
 		local bonus = data.Damage
-		-- if pet:GetAttribute("isGolden") then
-		-- 	bonus *= GoldMachineData.MULTIPLIER_GOLD_PET
-		-- end
+		if pet:GetAttribute("isGolden") then
+			bonus *= GoldMachineData.MULTIPLIER_GOLD_PET
+		end
 
-		-- if pet:GetAttribute("isVoid") then
-		-- 	bonus *= VoidMachineData.MULTIPLIER_GOLD_PET
-		-- end
+		if pet:GetAttribute("isVoid") then
+			bonus *= VoidMachineData.MULTIPLIER_GOLD_PET
+		end
 
 		sortedPets[#sortedPets + 1] = { Object = pet, Power = bonus }
 	end

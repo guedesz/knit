@@ -21,6 +21,7 @@ return {
 	Units = {
 
 		MaxUnitsEquipped = 3,
+		MaxUnitsInventory = 25,
 		Equippeds = {},
 		List = {},
 		

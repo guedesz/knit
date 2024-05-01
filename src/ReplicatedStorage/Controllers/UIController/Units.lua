@@ -10,6 +10,8 @@ local Format = Knit:GetModule("Format")
 local Tween = Knit:GetModule("Tween")
 local Promise = Knit:GetModule("Promise")
 local UnitsData = Knit:GetMetaData("Units")
+local GoldMachineData = Knit:GetMetaData("GoldMachine")
+local VoidMachineData = Knit:GetMetaData("VoidMachine")
 
 -- // KNIT SERVICES
 
@@ -53,6 +55,7 @@ function Units:init()
 
 	self.Holder = self.Gui.Holder
 	self.ScrollingFrame = self.Holder:WaitForChild("ScrollingFrame")
+	self.Bottom = self.Holder:WaitForChild("Bottom")
 
 	self.EquippedPets = {}
 	self.EquippedFrames = {}
@@ -113,6 +116,8 @@ function Units:loadTopButtons()
 				self.EquippedPets[petId] = nil
 			end
 
+			self:updateMaxEquipped()
+			
 			--self:loadInventory()
 		end)
 	end)
@@ -130,6 +135,8 @@ function Units:loadTopButtons()
 			if not result then
 				return self._MessageController:DisplayErrorMessage(message)
 			end
+
+			self:updateMaxEquipped()
 		end)
 
 		task.wait(0.5)
@@ -185,6 +192,27 @@ function Units:clearInventory()
 	self.PetsIn = 0
 end
 
+function Units:updateMaxInventory()
+	local maxInventory = self.DataFolder:WaitForChild("Units"):GetAttribute("MaxUnitsInventory")
+	self.Bottom.MaxInventory.TextLabel.Text = self.PetsIn .. "/" .. maxInventory
+
+	--local button = self.Holder.Bottom.Frame.MaxInventory.Purchase
+
+	-- if self.DataFolder:WaitForChild("Gamepass"):GetAttribute("Plus25Pet") and self.DataFolder.Gamepass:GetAttribute("Plus100Pet") then
+	-- 	button.Visible = false
+	-- end
+
+end
+
+function Units:updateMaxEquipped(equippedPets: {})
+	if equippedPets == nil then
+		equippedPets = self.DataFolder:WaitForChild("Units").Equippeds:GetChildren()
+	end
+
+	local maxEquipped = self.DataFolder.Units:GetAttribute("MaxUnitsEquipped")
+	self.Bottom.MaxEquipped.TextLabel.Text = #equippedPets .. "/" .. maxEquipped
+end
+
 function Units:loadInventory()
 	self:clearInventory()
 
@@ -195,8 +223,8 @@ function Units:loadInventory()
 		self:loadUnit(unitId, unit:GetAttribute("Name"), unit)
 	end
 
-	-- self:updateMaxEquipped(equippedUnits)
-	-- self:updateMaxInventory()
+	self:updateMaxEquipped(equippedUnits)
+	self:updateMaxInventory()
 end
 
 function Units:loadUnit(unitId, unitName, unitFolder)
@@ -219,11 +247,11 @@ function Units:loadUnit(unitId, unitName, unitFolder)
 
 	if unitFolder:GetAttribute("isGolden") then
 		frame.isGolden.Visible = true
-		--petBonus *= GoldMachineData.MULTIPLIER_GOLD_PET
+		petBonus *= GoldMachineData.MULTIPLIER_GOLD_PET
 		imageId = petInfo.GoldImage
 	elseif unitFolder:GetAttribute("isVoid") then
 		frame.isVoid.Visible = true
-		--petBonus *= VoidMachineData.MULTIPLIER_GOLD_PET
+		petBonus *= VoidMachineData.MULTIPLIER_GOLD_PET
 		imageId = petInfo.VoidImage
 	elseif unitFolder:GetAttribute("isHuge") then
 		frame.isHuge.Visible = true
@@ -288,7 +316,7 @@ function Units:loadUnit(unitId, unitName, unitFolder)
 
 					frame.LayoutOrder += LAYOUUT_EQUIPPED
 					self._MessageController:DisplaySoundMessage("", Color3.fromRGB(255, 166, 0), 2, "Equip")
-					--self:updateMaxEquipped()
+					self:updateMaxEquipped()
 				end)
 			end
 
@@ -298,7 +326,7 @@ function Units:loadUnit(unitId, unitName, unitFolder)
 				end
 
 				frame.LayoutOrder -= LAYOUUT_EQUIPPED
-				--self:updateMaxEquipped()
+				self:updateMaxEquipped()
 				self._MessageController:DisplaySoundMessage("", Color3.fromRGB(255, 166, 0), 2, "Equip")
 			end)
 		end, true)
@@ -307,7 +335,7 @@ function Units:loadUnit(unitId, unitName, unitFolder)
 	frame.Parent = self.ScrollingFrame
 
 	self.PetsIn += 1
-	--self:updateMaxInventory()
+	self:updateMaxInventory()
 end
 
 function Units:open()

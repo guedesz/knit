@@ -13,7 +13,7 @@ Egg1.List = {
     ["Maguto"] = {
         Name = "Maguto",
         Damage = 50,
-        Delay = 2,
+        Delay = 3,
         TimeSinceLastHit = 0,
         Chance = 48, -- Adjusted chance
         ImageId = 16597971191,
@@ -22,8 +22,18 @@ Egg1.List = {
 
     ["Karurin"] = {
         Name = "Karurin",
-        Damage = 50,
-        Delay = 5,
+        Damage = 5,
+        Delay = 1,
+        TimeSinceLastHit = 0,
+        Chance = 48, -- Adjusted chance
+        ImageId = 16597971191,
+        Rarity = UnitsRarity.Common
+    },
+
+    ["Gokoo"] = {
+        Name = "Gokoo",
+        Damage = 100,
+        Delay = 10,
         TimeSinceLastHit = 0,
         Chance = 48, -- Adjusted chance
         ImageId = 16597971191,

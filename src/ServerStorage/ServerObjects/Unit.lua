@@ -8,7 +8,6 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 --//MODULES
 local Maid = Knit:GetModule("Maid")
 local UnitsData = Knit:GetMetaData("Units")
-
 -- // KNIT SERVICES
 
 -- // CONSTS
