@@ -20,13 +20,14 @@ local Units = {}
 Units.__index = Units
 Units.Objects = {}
 
-function Units.new(_uiController, _dataController)
+function Units.new(_uiController, _dataController, _messageController)
 	local self = setmetatable({}, Units)
 	self._Maid = Maid.new()
 	self.ForceInit = true
 	self._UIController = _uiController
 	self._DataController = _dataController
 	self.DataFolder = _dataController:GetReplicationFolder()
+	self._MessageController = _messageController
 
 	self.Type = "Gui"
 	self.Name = "Units"
@@ -63,47 +64,8 @@ function Units:init()
 end
 
 function Units:start()
-
 	self.UnitsService = Knit.GetService("UnitsService")
 	self.UnitsController = Knit.GetController("UnitsController")
-
-
-	self.UnitsService.OnUnitEquipped:Connect(function(unitId, petName)
-		if not self.EquippedPets[unitId] then
-			local frame = self.ScrollingFrame:FindFirstChild(unitId)
-
-			if not frame then
-				return
-			end
-
-			frame.LayoutOrder -= LAYOUUT_EQUIPPED
-			frame.isEquipped.Visible = true
-
-			self.EquippedPets[unitId] = frame
-		end
-
-		--self:loadInventory()
-	end)
-
-	self.UnitsService.OnUnitUnequipped:Connect(function(unitId, petName)
-		local frame = self.EquippedPets[unitId]
-
-		if frame then
-			frame = self.ScrollingFrame:FindFirstChild(unitId)
-		end
-
-		if not frame then
-			return
-		end
-
-		frame.LayoutOrder += LAYOUUT_EQUIPPED
-		frame.isEquipped.Visible = false
-		frame = nil
-
-		self.EquippedPets[unitId] = nil
-
-		--self:loadInventory()
-	end)
 
 	self.UnitsService.OnUnitRemoved:Connect(function(unitId)
 		self:loadInventory()
@@ -127,9 +89,85 @@ function Units:start()
 		self:close()
 	end)
 
+	self:loadTopButtons()
 	self:loadInventory()
 
 	self.IsStart = true
+end
+
+function Units:loadTopButtons()
+	self._UIController:MouseEnterScale(self.Holder.UnquipAll.Activation, self.Holder.UnquipAll.UIScale)
+	self._UIController:MouseLeaveScale(self.Holder.UnquipAll.Activation, self.Holder.UnquipAll.UIScale)
+
+	self._UIController:Activated(self.Holder.UnquipAll.Activation, function()
+		self.UnitsService:OnUnquipAllRequest():andThen(function(result, message)
+			if not result then
+				return self._MessageController:DisplayErrorMessage(message)
+			end
+
+			for petId, v in self.EquippedPets do
+				v.LayoutOrder += LAYOUUT_EQUIPPED
+				v.isEquipped.Visible = false
+				v = nil
+
+				self.EquippedPets[petId] = nil
+			end
+
+			--self:loadInventory()
+		end)
+	end)
+
+	local canClick = true
+	-- equip best button
+	self._UIController:MouseEnterScale(self.Holder.EquipBest.Activation, self.Holder.EquipBest.UIScale)
+	self._UIController:MouseLeaveScale(self.Holder.EquipBest.Activation, self.Holder.EquipBest.UIScale)
+
+	self._UIController:Activated(self.Holder.EquipBest.Activation, function()
+		if not canClick then
+			return
+		end
+		self.UnitsService:OnEquipBestRequest():andThen(function(result, message)
+			if not result then
+				return self._MessageController:DisplayErrorMessage(message)
+			end
+		end)
+
+		task.wait(0.5)
+		canClick = true
+	end)
+end
+
+function Units:onEquipped(unitId)
+	if not self.EquippedPets[unitId] then
+		local frame = self.ScrollingFrame:FindFirstChild(unitId)
+
+		if not frame then
+			return
+		end
+
+		frame.LayoutOrder -= LAYOUUT_EQUIPPED
+		frame.isEquipped.Visible = true
+
+		self.EquippedPets[unitId] = frame
+	end
+end
+
+function Units:onUnquipped(unitId)
+	local frame = self.EquippedPets[unitId]
+
+	if frame then
+		frame = self.ScrollingFrame:FindFirstChild(unitId)
+	end
+
+	if not frame then
+		return
+	end
+
+	frame.LayoutOrder += LAYOUUT_EQUIPPED
+	frame.isEquipped.Visible = false
+	frame = nil
+
+	self.EquippedPets[unitId] = nil
 end
 
 function Units:clearInventory()
@@ -147,7 +185,6 @@ function Units:clearInventory()
 	self.PetsIn = 0
 end
 
-
 function Units:loadInventory()
 	self:clearInventory()
 
@@ -163,7 +200,6 @@ function Units:loadInventory()
 end
 
 function Units:loadUnit(unitId, unitName, unitFolder)
-
 	if self.ScrollingFrame:FindFirstChild(unitId) then
 		return
 	end
@@ -237,37 +273,36 @@ function Units:loadUnit(unitId, unitName, unitFolder)
 		end, true)
 	)
 
-	-- table.insert(
-	-- 	self.Connections,
-	-- 	self._UIController:Activated(frame.Activation, function()
-	-- 		if self.IsDeleteMenuOpen then
-	-- 			return self:onPetSelectedWithDelete(frame)
-	-- 		end
+	table.insert(
+		self.Connections,
+		self._UIController:Activated(frame.Activation, function()
+			if self.IsDeleteMenuOpen then
+				return self:onPetSelectedWithDelete(frame)
+			end
 
-	-- 		if frame.isEquipped.Visible then
-	-- 			return self.UnitsService:OnPetUnquipRequest(unitId):andThen(function(result, message)
-	-- 				if not result then
-	-- 					return self.MessageController:DisplayErrorMessage(message)
-	-- 				end
+			if frame.isEquipped.Visible then
+				return self.UnitsService:OnUnitUnquipRequest(unitId):andThen(function(result, message)
+					if not result then
+						return self._MessageController:DisplayErrorMessage(message)
+					end
 
-	-- 				frame.LayoutOrder += LAYOUUT_EQUIPPED
-	-- 				self.MessageController:DisplaySoundMessage("", Color3.fromRGB(255, 166, 0), 2, "Equip")
-	-- 				self:updateMaxEquipped()
-	-- 			end)
-	-- 		end
+					frame.LayoutOrder += LAYOUUT_EQUIPPED
+					self._MessageController:DisplaySoundMessage("", Color3.fromRGB(255, 166, 0), 2, "Equip")
+					--self:updateMaxEquipped()
+				end)
+			end
 
-	-- 		return self.PetService:OnPetEquipRequest(unitId):andThen(function(result, message)
-	-- 			if not result then
-	-- 				return self.MessageController:DisplayErrorMessage(message)
-	-- 			end
+			return self.UnitsService:OnUnitEquipRequest(unitId):andThen(function(result, message)
+				if not result then
+					return self._MessageController:DisplayErrorMessage(message)
+				end
 
-	-- 			frame.LayoutOrder -= LAYOUUT_EQUIPPED
-	-- 			self:updateMaxEquipped()
-	-- 			self.MessageController:DisplaySoundMessage("", Color3.fromRGB(255, 166, 0), 2, "Equip")
-	-- 		end)
-
-	-- 	end, true)
-	-- )
+				frame.LayoutOrder -= LAYOUUT_EQUIPPED
+				--self:updateMaxEquipped()
+				self._MessageController:DisplaySoundMessage("", Color3.fromRGB(255, 166, 0), 2, "Equip")
+			end)
+		end, true)
+	)
 
 	frame.Parent = self.ScrollingFrame
 

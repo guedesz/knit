@@ -18,14 +18,15 @@ local GUITemplate = {}
 GUITemplate.__index = GUITemplate
 GUITemplate.Objects = {}
 
-function GUITemplate.new(_uiController, _dataController)
+function GUITemplate.new(_uiController, _dataController, _messageController)
 	local self = setmetatable({}, GUITemplate)
 	self._Maid = Maid.new()
 	self.ForceInit = true
 	self._UIController = _uiController
 	self._DataController = _dataController
 	self._DataFolder = _dataController:GetReplicationFolder()
-
+	self._MessageController = _messageController
+	
 	self.Type = "Gui"
 	self.Name = "GUITemplate"
 

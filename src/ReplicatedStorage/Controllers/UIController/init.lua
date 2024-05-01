@@ -8,6 +8,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 local Color = Knit:GetModule("Color")
 local Tween = Knit:GetModule("Tween")
 local Constants = Knit:GetModule("Constants")
+local PlayerGui = Knit.LocalPlayer:WaitForChild("PlayerGui")
 --// OBJECTS
 
 -- // KNIT SERVICES & CONTROLLERS
@@ -17,8 +18,8 @@ local DataController, AudioController, MessageController
 local UIController = Knit.CreateController({ Name = "UIController" })
 
 function UIController:KnitInit()
-	Knit.Hud = Knit.PlayerGui:FindFirstChild("Hud") or Knit.PlayerGui:WaitForChild("Hud", 5)
-	Knit.Gui = Knit.PlayerGui:FindFirstChild("Gui") or Knit.PlayerGui:WaitForChild("Gui", 5)
+	Knit.Hud = Knit.PlayerGui:FindFirstChild("Hud") or PlayerGui:FindFirstChild("Hud", 5)
+	Knit.Gui = Knit.PlayerGui:FindFirstChild("Gui") or PlayerGui:FindFirstChild("Gui", 5)
 end
 
 UIController.GuiControllers = {}
@@ -73,11 +74,11 @@ end
 
 function UIController:GetHolder(type: "Hud" | "Gui", holderName: string)
 	if not Knit.Hud then
-		Knit.Hud = Knit.PlayerGui:FindFirstChild("Hud") or Knit.PlayerGui:WaitForChild("Hud", 5)
+		Knit.Hud = Knit.PlayerGui:FindFirstChild("Hud") or PlayerGui:WaitForChild("Hud", 5)
 	end
 
 	if not Knit.Gui then
-		Knit.Gui = Knit.PlayerGui:FindFirstChild("Gui") or Knit.PlayerGui:WaitForChild("Gui", 5)
+		Knit.Gui = Knit.PlayerGui:FindFirstChild("Gui") or PlayerGui:WaitForChild("Gui", 5)
 	end
 
 	if type == "Hud" then
