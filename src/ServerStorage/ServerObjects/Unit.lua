@@ -43,7 +43,7 @@ function Unit.new(player: Player, name: string, id: string, damageService)
 	return self
 end
 
-function Unit:takeDamage()
+function Unit:doDamage()
 
 	if self.IsDestroying then
 		return

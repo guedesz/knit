@@ -64,7 +64,7 @@ function UnitsService:KnitStart()
 
 				if Unit.Objects[unit.Name] then
 					for _, unit in Unit.Objects[unit.Name] do
-						unit:takeDamage()
+						unit:doDamage()
 					end
 				end
 			end

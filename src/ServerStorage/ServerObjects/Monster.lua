@@ -40,6 +40,8 @@ function Monster.new(player, dataFolder, levelsData, monsterService, levelServic
 		IsBoss = false,
 	}
 
+	Monster.Objects[player] = self
+
 	return self
 end
 
@@ -122,9 +124,13 @@ function Monster:setupHealth()
 end
 
 function Monster:destroy()
+
+	self.IsDestroying = true
+
 	self._Maid:DoCleaning()
 	self._Maid = nil
 
+	Monster.Objects[self._Player] = nil
 	self._MonsterService.Client.OnMonsterKilled:FireAll(self._Player, self.Info)
 end
 

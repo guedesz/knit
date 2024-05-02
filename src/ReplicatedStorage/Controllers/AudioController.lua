@@ -18,6 +18,7 @@ AudioController.Assets = {
 	BossKill = 3199239299,
 	BossFail = 17284893833,
 
+	Shuriken = 5789211405,
 	GoldEarned = 5226834046,
 }
 

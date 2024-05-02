@@ -11,11 +11,12 @@ return {
 		Gems = 0,
 	},
 
-	Swords = {
+	Shurikens = {
 
-		Equipped = "",
+		Equipped = "Starter",
 
 		List = {},
+		
 	},
 
 	Units = {
