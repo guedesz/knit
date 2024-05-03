@@ -20,6 +20,8 @@ AudioController.Assets = {
 
 	Shuriken = 5789211405,
 	GoldEarned = 5226834046,
+
+	Hit = 7254180774,
 }
 
 AudioController.LastTimePlayed = {}

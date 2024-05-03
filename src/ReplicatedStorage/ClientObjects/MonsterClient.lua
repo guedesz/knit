@@ -61,6 +61,12 @@ function MonsterClient:onTakeDamage(damage, actual, maxHealth)
 
 	local color = Color3.new(1, 0.0117647, 0.0117647)
 	DamageEffect.createDamageEffect(self.Model, math.round(damage), color)
+
+	self._AudioController:PlaySoundInPart(
+		self.Model.PrimaryPart,
+			"Hit",
+			{ Volume = 1, RollOffMaxDistance = 100, RollOffMinDistance = 1 }
+		)
 end
 
 function MonsterClient:init()
