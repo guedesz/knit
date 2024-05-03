@@ -30,7 +30,7 @@ function Units.new(_uiController, _dataController, _messageController)
 	self._DataController = _dataController
 	self.DataFolder = _dataController:GetReplicationFolder()
 	self._MessageController = _messageController
-
+	
 	self.Type = "Gui"
 	self.Name = "Units"
 
@@ -105,7 +105,7 @@ function Units:initDelete()
 
 	local deleteFrame = self.Bottom:WaitForChild("Delete")
 	local confirmFrame = self.Bottom:WaitForChild("Confirm")
- 
+
 	self._UIController:MouseEnterScale(deleteFrame.Activation, deleteFrame.UIScale)
 	self._UIController:MouseLeaveScale(deleteFrame.Activation, deleteFrame.UIScale)
 
@@ -121,7 +121,6 @@ function Units:initDelete()
 	end, true)
 
 	self._UIController:Activated(deleteFrame.Activation, function()
-
 		if self.IsDeleteMenuOpen then
 			return self:clearDeleteMenu(confirmFrame, deleteFrame)
 		end
@@ -153,8 +152,6 @@ function Units:initDelete()
 end
 
 function Units:openDeleteMenu(confirm, cancel)
-
-
 	self.PetsToDelete = {}
 
 	self.IsDeleteMenuOpen = true
@@ -163,7 +160,6 @@ function Units:openDeleteMenu(confirm, cancel)
 end
 
 function Units:clearDeleteMenu(confirm, cancel)
-
 	for _, v in self.PetsToDelete do
 		v.isRemove.Visible = false
 	end
@@ -174,7 +170,6 @@ function Units:clearDeleteMenu(confirm, cancel)
 	confirm.Visible = false
 	cancel.TextLabel.Text = "Delete"
 end
-
 
 function Units:loadTopButtons()
 	self._UIController:MouseEnterScale(self.Holder.UnquipAll.Activation, self.Holder.UnquipAll.UIScale)
@@ -195,7 +190,7 @@ function Units:loadTopButtons()
 			end
 
 			self:updateMaxEquipped()
-			
+
 			--self:loadInventory()
 		end)
 	end)
@@ -279,7 +274,6 @@ function Units:updateMaxInventory()
 	-- if self.DataFolder:WaitForChild("Gamepass"):GetAttribute("Plus25Pet") and self.DataFolder.Gamepass:GetAttribute("Plus100Pet") then
 	-- 	button.Visible = false
 	-- end
-
 end
 
 function Units:updateMaxEquipped(equippedPets: {})
@@ -309,7 +303,6 @@ function Units:onPetSelectedWithDelete(petFrame: Frame)
 	Tween.Play(petFrame.isRemove.UIScale, { 0.2 }, { Scale = 1 })
 	table.insert(self.PetsToDelete, petFrame)
 end
-
 
 function Units:loadInventory()
 	self:clearInventory()
@@ -346,25 +339,13 @@ function Units:loadUnit(unitId, unitName, unitFolder)
 	if unitFolder:GetAttribute("isGolden") then
 		frame.isGolden.Visible = true
 		petBonus *= GoldMachineData.MULTIPLIER_GOLD_PET
-		imageId = petInfo.GoldImage
 	elseif unitFolder:GetAttribute("isVoid") then
 		frame.isVoid.Visible = true
 		petBonus *= VoidMachineData.MULTIPLIER_GOLD_PET
-		imageId = petInfo.VoidImage
-	elseif unitFolder:GetAttribute("isHuge") then
-		frame.isHuge.Visible = true
-		--petBonus *= HugeMachineData.MULTIPLIER_GOLD_PET
-		imageId = petInfo.HugeImage
-	else
-		imageId = petInfo.ImageId
 	end
 
-	frame.ImageLabel.Image = "rbxassetid://" .. (imageId or petInfo.ImageId)
-	-- local upgradeAmount = self.DataFolder:WaitForChild("Upgrades"):GetAttribute("Pet")
+	self.UnitsController:SetViewportFrameRender(frame.ViewportFrame, unitName)
 
-	-- if upgradeAmount > 0 then
-	-- 	petBonus += petBonus * (Constants.BONUS_PER_UPGRADE * upgradeAmount)
-	-- end
 	frame.LayoutOrder -= petInfo.Damage * 1000
 
 	local isEquipped = false
@@ -385,19 +366,19 @@ function Units:loadUnit(unitId, unitName, unitFolder)
 	table.insert(self.Connections, self._UIController:MouseEnterScale(frame.Activation, frame.UIScale, true))
 	table.insert(self.Connections, self._UIController:MouseLeaveScale(frame.Activation, frame.UIScale, true))
 
-	table.insert(
-		self.Connections,
-		self._UIController:MouseEnter(frame.Activation, function()
-			Tween.Play(frame.ImageLabel, { 0.25 }, { Rotation = -15 })
-		end, true)
-	)
+	-- table.insert(
+	-- 	self.Connections,
+	-- 	self._UIController:MouseEnter(frame.Activation, function()
+	-- 		Tween.Play(frame.ImageLabel, { 0.25 }, { Rotation = -15 })
+	-- 	end, true)
+	-- )
 
-	table.insert(
-		self.Connections,
-		self._UIController:MouseLeave(frame.Activation, function()
-			Tween.Play(frame.ImageLabel, { 0.25 }, { Rotation = 0 })
-		end, true)
-	)
+	-- table.insert(
+	-- 	self.Connections,
+	-- 	self._UIController:MouseLeave(frame.Activation, function()
+	-- 		Tween.Play(frame.ImageLabel, { 0.25 }, { Rotation = 0 })
+	-- 	end, true)
+	-- )
 
 	table.insert(
 		self.Connections,

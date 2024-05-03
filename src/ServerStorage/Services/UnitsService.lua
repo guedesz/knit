@@ -43,7 +43,6 @@ function UnitsService:KnitStart()
 		local id = self:createUnitObject(player, "Karurin")
 		local id = self:createUnitObject(player, "Gokoo")
 		local id = self:createUnitObject(player, "Gokoo")
-
 	end)
 
 	Players.PlayerRemoving:Connect(function(player: Player)
@@ -59,10 +58,8 @@ function UnitsService:KnitStart()
 				unit.TimeSinceLastHit = 0
 
 				--print(unit.Name .. " releasing hit")
-
-				self.Client.OnUnitReleaseSkill:FireAll(unit.Name)
-
 				if Unit.Objects[unit.Name] then
+					self.Client.OnUnitReleaseSkill:FireAll(unit.Name)
 					for _, unit in Unit.Objects[unit.Name] do
 						unit:doDamage()
 					end
@@ -285,22 +282,20 @@ function UnitsService:onEquipBestRequest(player: Player)
 	return true
 end
 
-function UnitsService:onUnitRemoveRequest(player: Player, petList: {string}, isTrade)
-
+function UnitsService:onUnitRemoveRequest(player: Player, petList: { string }, isTrade)
 	-- if not isTrade then
 	-- 	if TradeService.OnGoingTrades[player] then
 	-- 		return false, "You can't remove a pet while in a trade"
 	-- 	end
 	-- end
-	
+
 	assert(typeof(petList) == "table", "wrong type provided, expected 'table'")
-	
+
 	if #petList == 0 then
 		return false, ""
 	end
-	
+
 	for _, petId in petList do
-		
 		if typeof(petId) ~= "string" then
 			return false, "wrong type provived, expected 'string'"
 		end
@@ -310,16 +305,16 @@ function UnitsService:onUnitRemoveRequest(player: Player, petList: {string}, isT
 		if not object then
 			return false, "something went wrong. [pet remove request]"
 		end
-	
+
 		if table.find(self:getUnitsEquipped(player), petId) then
 			self:onUnitUnquipRequest(player, petId)
 		end
-	
+
 		DataService:DeleteDataValueInPath(player, "Units.List." .. petId)
 	end
 
 	self.Client.OnUnitRemoved:Fire(player)
-	
+
 	return true
 end
 
@@ -339,9 +334,8 @@ function UnitsService.Client:OnEquipBestRequest(player: Player)
 	return self.Server:onEquipBestRequest(player)
 end
 
-function UnitsService.Client:OnUnitRemoveRequest(player: Player, petList: {string})
+function UnitsService.Client:OnUnitRemoveRequest(player: Player, petList: { string })
 	return self.Server:onUnitRemoveRequest(player, petList)
 end
-
 
 return UnitsService

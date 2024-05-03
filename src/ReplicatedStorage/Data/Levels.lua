@@ -4,7 +4,7 @@ local Levels = {
     MONSTER_REWARD_BASE = 5,
     
     MOSTERS_UNTIL_BOSS = 10,
-    TIMER_FOR_BOSS = 5,
+    TIMER_FOR_BOSS = 30,
     HEALTH_MULTIPLIER_PER_MONSTER = 1.2,
 
     Bosses = {

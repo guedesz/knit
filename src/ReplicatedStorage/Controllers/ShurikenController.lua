@@ -98,7 +98,7 @@ function ShurikenController:onClick()
 
     ice.PrimaryPart.Trail.Enabled = true
 
-    ice.Parent = workspace
+    ice.Parent = workspace.Shurikens
 
    AudioController:PlaySoundInPart(
     ice.PrimaryPart,

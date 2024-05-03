@@ -8,6 +8,8 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 --//MODULES
 local Maid = Knit:GetModule("Maid")
 local UnitsData = Knit:GetMetaData("Units")
+local TableUtil = Knit:GetModule("TableUtil")
+
 -- // KNIT SERVICES
 
 -- // CONSTS
@@ -61,6 +63,12 @@ function Unit:destroy()
 
 	Unit.Objects[self._Player][self.Id] = nil
 	Unit.Objects[self.Name][self.Id] = nil
+
+	local count = TableUtil.GetLength(Unit.Objects[self.Name])
+
+	if count == 0 then
+		Unit.Objects[self.Name] = nil
+	end
 
 	self.Name = nil
 	self.Id = nil

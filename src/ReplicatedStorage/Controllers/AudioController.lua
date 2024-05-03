@@ -35,7 +35,6 @@ function AudioController:KnitStart()
 	DataController = Knit.GetController("DataController")
 end
 
-
 function AudioController:PlayAndDestroy(audioName, maxTime)
 	if self.Assets[audioName] then 
 		local sound = Instance.new("Sound")

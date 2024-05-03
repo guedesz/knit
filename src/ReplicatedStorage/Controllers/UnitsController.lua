@@ -137,4 +137,18 @@ function UnitsController:getUnitObjectById(player, id)
 
 	return object
 end
+
+function UnitsController:SetViewportFrameRender(viewportFrame: ViewportFrame, unitName: string)
+	
+	local unit = Knit:GetAsset(unitName)
+
+	unit.Parent = viewportFrame
+
+	local previousCamera = Instance.new("Camera", viewportFrame)
+	viewportFrame.CurrentCamera = previousCamera
+
+	local newPos = unit:GetPivot().Position - Vector3.new(0, -1.5, 0)
+	previousCamera.CFrame = CFrame.new((newPos) + unit:GetPivot().LookVector * 3, newPos)
+
+end
 return UnitsController
