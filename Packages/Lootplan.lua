@@ -8,7 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = require(ReplicatedStorage:WaitForChild("packages").Knit)
 local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 
-local PetsData = Knit:GetMetaData("Pets")
+local PetsData = Knit:GetMetaData("Units")
 
 local LootPlan = {}
 
@@ -109,7 +109,7 @@ function SingleLootPlan:GetRandomLoot(luck)
 		local aggregate = 0
 		for i, loot in self.LootList do
 
-			local petInfo = PetsData:getPetByName(loot.name)
+			local petInfo = PetsData:getUnitByName(loot.name)
 
             if not petInfo then
                 print("error", loot.name)

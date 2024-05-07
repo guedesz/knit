@@ -62,6 +62,10 @@ function Level:setupMonster()
 
 	self._Maid:GiveTask(self.Monster.OnDamageTaken:Connect(function(damage, health, maxHealth)
 
+		if self.Monster.IsDestroying then
+			return
+		end
+
 		if health > 0 then
 			return
 		end
@@ -101,8 +105,7 @@ function Level:onBossSuccessKill()
 		return warn("error getting monster when killed")
 	end
 
-	self._DataService:IncrementDataValueInPath(self._Player, "Data.Level", 1)
-	self._DataService:IncrementDataValueInPath(self._Player, "Data.Wave", 0)
+	self.Monster.CanTakeDamage = false
 
 	self._LevelService.Client.OnBossSuccessKill:Fire(self._Player)
 

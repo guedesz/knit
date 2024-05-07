@@ -21,6 +21,11 @@ local rnd = Random.new()
 
 --Creates a single confetti with random size
 function CreateOne(origin, colors, minSize, maxSize)
+
+	if not gui then
+		gui = Knit.Gui
+	end
+	
 	local allTypes = types:GetChildren()
 
 	local confetti = allTypes[rnd:NextInteger(1, #allTypes)]:Clone()

@@ -1,14 +1,14 @@
 local UnitsRarity = require(script.Parent.Parent:WaitForChild("UnitsRarity"))
 
-local Egg1 = {
+local BasicEgg = {
     Type = "Win",
     Price = 10,
     Name = "Starter Egg",
-    World = 1,
+    Level = 1,
     ImageId = 16594405488,
 }
 
-Egg1.List = {
+BasicEgg.List = {
 
     ["Maguto"] = {
         Name = "Maguto",
@@ -22,7 +22,7 @@ Egg1.List = {
 
     ["Karurin"] = {
         Name = "Karurin",
-        Damage = 5,
+        Damage = 10,
         Delay = 1,
         TimeSinceLastHit = 0,
         Chance = 48, -- Adjusted chance
@@ -33,7 +33,7 @@ Egg1.List = {
     ["Gokoo"] = {
         Name = "Gokoo",
         Damage = 100,
-        Delay = 10,
+        Delay = 1,
         TimeSinceLastHit = 0,
         Chance = 48, -- Adjusted chance
         ImageId = 16597971191,
@@ -67,4 +67,4 @@ Egg1.List = {
     -- }
 }
 
-return Egg1
+return BasicEgg

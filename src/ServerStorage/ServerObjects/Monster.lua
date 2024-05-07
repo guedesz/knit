@@ -30,6 +30,8 @@ function Monster.new(player, dataFolder, levelsData, monsterService, levelServic
 	self._MonsterService = monsterService
 	self._LevelService = levelService
 
+	self.CanTakeDamage = true
+
 	self.OnDamageTaken = Signal.new()
 
 	self._Maid:GiveTask(self.OnDamageTaken)
@@ -84,11 +86,17 @@ function Monster:startTimer()
 
 		if self.Timer >= self._LevelsData.TIMER_FOR_BOSS and self.Info.Health > 0 then
 			self.OnBossFailedToKill:Fire()
+			self.CanTakeDamage = false
 		end
 	end))
 end
 
 function Monster:takeDamage(damage: value)
+
+	if not self.CanTakeDamage then
+		return
+	end
+
 	self.Info.Health = math.round(math.clamp(self.Info.Health - damage, 0, self.Info.MaxHealth))
 
 	self._MonsterService.Client.OnTakeDamage:FireAll(self._Player, damage, self.Info.Health, self.Info.MaxHealth)
@@ -125,6 +133,8 @@ end
 
 function Monster:destroy()
 
+
+	self.CanTakeDamage = false
 	self.IsDestroying = true
 
 	self._Maid:DoCleaning()
