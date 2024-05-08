@@ -109,6 +109,7 @@ function EggController:loadHatchers()
 
     local themeName, info = ThemesData:getThemeByLevel(level)
 
+	
 	-- local world = Knit.LocalPlayer:GetAttribute("CurrentlyWorld")
 
 	-- if not world then
@@ -122,6 +123,10 @@ function EggController:loadHatchers()
 
 	local eggs = self.Eggs[themeName]
 
+	if not eggs then
+		return
+	end
+	
 	for _, egg in eggs do
         print(egg)
 

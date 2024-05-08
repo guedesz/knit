@@ -1,43 +1,43 @@
-local Themes = {
 
+local Themes = {
+    THEMES_AMOUNT = 2
 }
 
 Themes.List = {
 
-    ["Castle"] = {
+    [1] = {
         MinLevel = 1,
-        MaxLevel = 5,
+        MaxLevel = 4,
         Name = "Castle",
     },
 
-    ["Testing"] = {
+    [2] = {
         MinLevel = 5,
         MaxLevel = 15,
         Name = "Testing"
     },
-
-
-
 }
+
 
 function Themes:getThemeByLevel(level: number)
     
+    local themeName, Theme
+    for i = 1, self.THEMES_AMOUNT do
+        local theme = Themes.List[i]
 
-    for themeName, info in self.List do
-        
-        if level < info.MinLevel then
+        if level < theme.MinLevel then
             continue
         end
 
-        if level > info.MaxLevel then
-            continue
-        end
-
-        return themeName, info
+       themeName = theme.Name
+       Theme = theme
     end
 
-    warn("error getting theme for level:", level)
-    return false
+    if not themeName then
+       return false, warn("error getting theme for level:", level)
+    end
+
+    return themeName, Theme
 end
 
 return Themes

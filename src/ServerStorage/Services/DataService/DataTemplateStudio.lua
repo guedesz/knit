@@ -5,8 +5,8 @@ return {
 	
 	Data = {
 		TimePlayed = 0,
-		Level = 1,
-		Wave = 1,
+		Level = 22,
+		Wave = 10,
 		Gold = 999,
 		Gems = 0,
 	},

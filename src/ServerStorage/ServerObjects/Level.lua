@@ -9,6 +9,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 local Maid = Knit:GetModule("Maid")
 local Constants = Knit:GetModule("Constants")
 local Monster = Knit:GetModule("Monster")
+local Signal = Knit:GetModule("Signal")
 
 -- // KNIT SERVICES
 
@@ -34,6 +35,9 @@ function Level.new(player: Player, levelService, monsterService, dataService, go
 	self.CurrentlyLevel = self._DataFolder:WaitForChild("Data"):GetAttribute("Level")
 	self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
 
+	self.OnNewLevel = Signal.new()
+	self._Maid:GiveTask(self.OnNewLevel)
+	
 	return self
 end
 
@@ -121,6 +125,7 @@ function Level:onMonsterKilled()
 		self._DataService:IncrementDataValueInPath(self._Player, "Data.Level", 1)
 		self._DataService:ChangeValueOnProfile(self._Player, "Data.Wave", 0)
 		self.CurrentlyWave = self._DataFolder.Data:GetAttribute("Wave")
+		self.OnNewLevel:Fire()
 	end
 
 	if self.CurrentlyWave < self._LevelsData.MOSTERS_UNTIL_BOSS then

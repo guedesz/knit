@@ -10,6 +10,7 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 --//MODULES
 local Maid = Knit:GetModule("Maid")
 local Signal = Knit:GetModule("Signal")
+local ThemesData = Knit:GetMetaData("Themes")
 
 -- // KNIT SERVICES
 
@@ -29,6 +30,14 @@ function Tycoon.new(player: Player, plot, tycoonService, dataService, levelServi
 	self._TycoonService = tycoonService
 	self._DataService = dataService
 	self._LevelService = levelService
+	self._DataFolder = dataService:GetReplicationFolder(player)
+
+	local themeName, info = ThemesData:getThemeByLevel(self._DataFolder:WaitForChild("Data"):GetAttribute("Level"))
+
+	self.ThemeName = themeName
+	self.Theme = Knit:GetAsset(themeName or "Castle")
+	self.Theme.Parent = TYCOONS_FOLDER
+	self._Maid.Theme = self.Theme
 
 	self.Folder = Knit:GetAsset("TycoonTemplate")
 	self.Folder.Name = player.UserId
@@ -40,6 +49,10 @@ function Tycoon.new(player: Player, plot, tycoonService, dataService, levelServi
 	self.Level = self._LevelService:createNewLevel(self.Player)
 	self.Level:init()
 
+	self._Maid:GiveTask(self.Level.OnNewLevel:Connect(function()
+		self:checkForThemeChanged()
+	end))
+
 	self._Maid:GiveTask(function()
 		self.Level:destroy()
 		self.Level = nil
@@ -48,6 +61,26 @@ function Tycoon.new(player: Player, plot, tycoonService, dataService, levelServi
 	Tycoon.Objects[player] = self
 	
 	return self
+end
+
+function Tycoon:checkForThemeChanged()
+	
+	local themeName, info = ThemesData:getThemeByLevel(self._DataFolder:WaitForChild("Data"):GetAttribute("Level"))
+
+	if themeName == self.ThemeName then
+		return
+	end
+
+	self._Maid.Theme = nil
+
+	self.ThemeName = themeName
+
+	self.Theme = Knit:GetAsset(themeName or "Castle")
+	self.Theme.Parent = TYCOONS_FOLDER
+	self._Maid.Theme = self.Theme
+
+	-- TODO display visual animation to upgrade the plot client side
+	
 end
 
 function Tycoon:init()
