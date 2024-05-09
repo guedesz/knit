@@ -4,7 +4,6 @@ local BasicEgg = {
     Type = "Win",
     Price = 10,
     Name = "Starter Egg",
-    Level = 1,
     ImageId = 16594405488,
 }
 
@@ -38,6 +37,26 @@ BasicEgg.List = {
         Chance = 48, -- Adjusted chance
         ImageId = 16597971191,
         Rarity = UnitsRarity.Common
+    },
+
+    ["Sookuna"] = {
+        Name = "Sookuna",
+        Damage = 65,
+        Delay = 1,
+        TimeSinceLastHit = 0,
+        Chance = 48, -- Adjusted chance
+        ImageId = 16597971191,
+        Rarity = UnitsRarity.Epic
+    },
+
+    ["Gojuu"] = {
+        Name = "Gojuu",
+        Damage = 25,
+        Delay = 1,
+        TimeSinceLastHit = 0,
+        Chance = 48, -- Adjusted chance
+        ImageId = 16597971191,
+        Rarity = UnitsRarity.Legendary
     },
 
     -- ["Chicken"] = {

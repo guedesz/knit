@@ -15,6 +15,7 @@ local Tween = Knit:GetModule("Tween")
 local Signal = Knit:GetModule("Signal")
 local DamageEffect = Knit:GetModule("DamageEffect")
 local ShakePart = Knit:GetModule("ShakePart")
+local Format = Knit:GetModule("Format")
 
 -- // KNIT SERVICES
 
@@ -46,7 +47,7 @@ end
 function MonsterClient:onTakeDamage(damage, actual, maxHealth)
 	self.Info.Health = actual
 
-	self.Billboard.Red.TextLabel.Text = self.Info.Health .. "/" .. self.Info.MaxHealth
+	self.Billboard.Red.TextLabel.Text = Format:Abbrievate(self.Info.Health) .. "/" .. Format:Abbrievate(self.Info.MaxHealth)
 	Tween.Play(self.Billboard.Red.Green, { 0.25 }, { Size = UDim2.fromScale(math.clamp(actual / maxHealth, 0, 1), 1) })
 
 	if Knit.LocalPlayer == self._Player then
@@ -120,7 +121,7 @@ function MonsterClient:setupHealthBar()
 	self.Billboard = Knit:GetAsset("HealthBar")
 	self.Billboard.Parent = self.Model
 
-	self.Billboard.Red.TextLabel.Text = self.Info.Health .. "/" .. self.Info.MaxHealth
+	self.Billboard.Red.TextLabel.Text = Format:Abbrievate(self.Info.Health) .. "/" .. Format:Abbrievate(self.Info.MaxHealth)
 	Tween.Play(
 		self.Billboard.Red.Green,
 		{ 0.25 },

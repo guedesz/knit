@@ -161,7 +161,7 @@ end
 
 function Level:updateHealthbar(actual, maxHealth)
 	
-	self.Gui.Red.TextLabel.Text = actual .. "/" .. maxHealth
+	self.Gui.Red.TextLabel.Text = Format:Abbrievate(actual) .. "/" .. Format:Abbrievate(maxHealth)
 	Tween.Play(self.Gui.Red.Green, { 0.25 }, { Size = UDim2.fromScale(math.clamp(actual / maxHealth, 0, 1), 1) })
 end
 
