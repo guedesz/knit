@@ -121,17 +121,20 @@ function EggController:loadHatchers()
 	-- 	v = nil
 	-- end
 
-	local eggs = self.Eggs[themeName]
+	for eggName, egg in  self.Eggs do
 
-	if not eggs then
-		return
-	end
-	
-	for _, egg in eggs do
-        print(egg)
+		for _, v in egg do
 
-		self:loadEgg(egg)
+			self:loadEgg(v)
+		end
 	end
+	-- local eggs = self.Eggs[themeName]
+
+	-- for _, egg in eggs do
+    --     print(egg)
+
+	-- 	self:loadEgg(egg)
+	-- end
 end
 
 function EggController:loadEgg(egg: Model)
