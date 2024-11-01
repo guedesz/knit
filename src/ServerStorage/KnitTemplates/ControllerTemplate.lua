@@ -13,14 +13,14 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 -- // CONSTS
 
 
-local Controller = Knit.CreateController{Name = "Controller"}
+local Template = Knit.CreateController{Name = "Template"}
 
-function Controller:KnitInit()
+function Template:KnitInit()
 
 end
 
-function Controller:KnitStart()
+function Template:KnitStart()
 	
 end
 
-return Controller
+return Template

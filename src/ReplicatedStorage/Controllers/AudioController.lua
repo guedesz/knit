@@ -13,15 +13,6 @@ AudioController.Assets = {
 
 	GoldPurchase = 7145481742,
     Error2 = 3742413227,
-
-	MonsterKill = 17274325063,
-	BossKill = 3199239299,
-	BossFail = 17284893833,
-
-	Shuriken = 5789211405,
-	GoldEarned = 5226834046,
-
-	Hit = 7254180774,
 }
 
 AudioController.LastTimePlayed = {}

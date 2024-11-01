@@ -10,7 +10,8 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 --//MODULES
 local Maid = Knit:GetModule("Maid")
 local Signal = Knit:GetModule("Signal")
-local ThemesData = Knit:GetMetaData("Themes")
+local Monster = Knit:GetModule("Monster")
+local PlayerTower = Knit:GetModule("PlayerTower")
 
 -- // KNIT SERVICES
 
@@ -21,7 +22,7 @@ local Tycoon = {}
 Tycoon.__index = Tycoon
 Tycoon.Objects = {}
 
-function Tycoon.new(player: Player, plot, tycoonService, dataService, levelService)
+function Tycoon.new(player: Player, plot, tycoonService, dataService)
 	local self = setmetatable({}, Tycoon)
 	self._Maid = Maid.new()
 	self.Player = player
@@ -29,58 +30,26 @@ function Tycoon.new(player: Player, plot, tycoonService, dataService, levelServi
 
 	self._TycoonService = tycoonService
 	self._DataService = dataService
-	self._LevelService = levelService
+
 	self._DataFolder = dataService:GetReplicationFolder(player)
-
-	local themeName, info = ThemesData:getThemeByLevel(self._DataFolder:WaitForChild("Data"):GetAttribute("Level"))
-
-	self.ThemeName = themeName
-	self.Theme = Knit:GetAsset(themeName or "Castle")
-	self.Theme.Parent = TYCOONS_FOLDER
-	self._Maid.Theme = self.Theme
-
+ 
 	self.Folder = Knit:GetAsset("TycoonTemplate")
 	self.Folder.Name = player.UserId
-	self.Folder:PivotTo(plot.monsterSpawn.CFrame)
+	self.Folder:PivotTo(plot.spawn.CFrame)
 
 	self.Folder.Parent = TYCOONS_FOLDER
 	self._Maid:GiveTask(self.Folder)
 
-	self.Level = self._LevelService:createNewLevel(self.Player)
-	self.Level:init()
-
-	self._Maid:GiveTask(self.Level.OnNewLevel:Connect(function()
-		self:checkForThemeChanged()
-	end))
-
-	self._Maid:GiveTask(function()
-		self.Level:destroy()
-		self.Level = nil
-	end)
-	
 	Tycoon.Objects[player] = self
 	
 	return self
 end
 
-function Tycoon:checkForThemeChanged()
-	
-	local themeName, info = ThemesData:getThemeByLevel(self._DataFolder:WaitForChild("Data"):GetAttribute("Level"))
+function Tycoon:initTower()
 
-	if themeName == self.ThemeName then
-		return
-	end
+	self.Tower = PlayerTower.new(self.Player, self._DataFolder:WaitForChild("Tower"):GetAttribute("Health"), "Cabin", self.Folder.Builds.PlayerTower.CFrame, self.Folder.Builds)
+	self.Tower:spawn()
 
-	self._Maid.Theme = nil
-
-	self.ThemeName = themeName
-
-	self.Theme = Knit:GetAsset(themeName or "Castle")
-	self.Theme.Parent = TYCOONS_FOLDER
-	self._Maid.Theme = self.Theme
-
-	-- TODO display visual animation to upgrade the plot client side
-	
 end
 
 function Tycoon:init()
@@ -102,25 +71,26 @@ function Tycoon:init()
 		self._TycoonService.Client.OnPlayerAdded:Fire(self.Player, plr, tycoon.Folder, tycoon.Plot)
 	end
 
-	-- task.spawn(function()
-	-- 	task.wait(3)
-	-- 	while true do
-	-- 		if self.Level then
-	-- 			self.Level:takeDamage(300)
-	-- 		else
-	-- 			break
-	-- 		end
-		
-	-- 		task.wait(1)
-	-- 	end
-	-- end)
+	self:initTower()
 
 	print("Tycoon init on server")
+
+end
+
+function Tycoon:newMatch(match)
+
+	if self.Match then
+		return
+	end
+
+	self.Match = match
+
+	self.Match:start()
 end
 
 function Tycoon:teleportToTycoonSpawn()
 	self.Player.Character:PivotTo(
-		self.Plot.spawn.CFrame + Vector3.new(0, self.Player.Character:GetExtentsSize().Y / 2, 0)
+		self.Folder.spawn.CFrame + Vector3.new(0, self.Player.Character:GetExtentsSize().Y / 2, 0)
 	)
 end
 
@@ -134,11 +104,16 @@ function Tycoon:destroy()
 
 	self.Plot = nil
 	self._DataService = nil
-	self._LevelService = nil
 
 	self._TycoonService.Client.OnPlayerRemoving:FireAll(self.Player)
 	self._TycoonService = nil
 	self.Player = nil
+
+	if self.Match then
+		self.Match:destroy()
+		self.Match = nil
+	end
+	
 end
 
 return Tycoon

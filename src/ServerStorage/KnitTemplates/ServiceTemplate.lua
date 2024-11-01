@@ -12,17 +12,17 @@ local Promise = Knit:GetModule("Promise")
 
 -- // CONSTS
 
-local Service = Knit.CreateService {
-	Name = "Service",
+local Template = Knit.CreateService {
+	Name = "Template",
 	Client = {
 	}
 }
-function Service:KnitInit()
+function Template:KnitInit()
 
 end
 
-function Service:KnitStart()
+function Template:KnitStart()
 	
 end
 
-return Service
+return Template

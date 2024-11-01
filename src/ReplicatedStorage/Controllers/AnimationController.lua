@@ -13,58 +13,60 @@ local Types = require(ReplicatedStorage.packages:WaitForChild("Types"))
 
 -- // CONSTS
 
+local AnimationController = Knit.CreateController({ Name = "AnimationController" })
 
-local AnimationController = Knit.CreateController{Name = "AnimationController"}
-
-function AnimationController:KnitInit()
-
-end
+function AnimationController:KnitInit() end
 
 AnimationController.Animations = {
-    Idle = 17340268234
+
+	Run = 18426726922,
+	RunBow = 18459918340,
+	IdleBow = 18460157531,
+	AttackBow = 18519875322,
+	Slash1 = 18426733637,
+	Slash2 = 18460512335,
+	Slash3 = 18460521741,
+
+	IdleSword = 18460528807,
+
+	IdleSamurai = 18537088738,
+	RunSamurai = 18537102744,
+	SwingSamurai1 = 18537096383,
+	SwingSamurai2 = 18537107376,
+	SwingSamurai3 = 18537110479,
+	
 }
 
-function AnimationController:KnitStart()
-	
-    for _, character in CollectionService:GetTagged("NPC") do
-        self:Play("IdleNpc", nil, character)
-    end
-
-    for _, character in CollectionService:GetTagged("NPC2") do
-        self:Play("IdleNPC2", nil, character)
-    end
-end
+function AnimationController:KnitStart() end
 
 function AnimationController:play(character, animName, priority, returnTrack)
-   
-    if not character then
-        character = Knit.LocalPlayer.Character or Knit.LocalPlayer.CharacterAppearenceLoaded:Wait()
-    end
+	if not character then
+		character = Knit.LocalPlayer.Character or Knit.LocalPlayer.CharacterAppearenceLoaded:Wait()
+	end
 
-    local humanoid = character:FindFirstChild("Humanoid")
-	
-    if not humanoid then
-        return
-    end
+	local humanoid = character:FindFirstChild("Humanoid")
 
-    local animator: Animator = humanoid:FindFirstChildOfClass("Animator")
+	if not humanoid then
+		return
+	end
 
-    if not animator then
-        animator = Instance.new("Animator")
-        animator.Parent = humanoid
-    end
+	local animator: Animator = humanoid:FindFirstChildOfClass("Animator")
 
-    local animation = Instance.new("Animation")
-    animation.AnimationId = "rbxassetid://".. self.Animations[animName]
+	if not animator then
+		animator = Instance.new("Animator")
+		animator.Parent = humanoid
+	end
 
-    local track: Animation = animator:LoadAnimation(animation)
-    track.Priority = priority or Enum.AnimationPriority.Action
-    track:Play()
+	local animation = Instance.new("Animation")
+	animation.AnimationId = "rbxassetid://" .. self.Animations[animName]
 
-    if returnTrack then
-        return track
-    end
+	local track: Animation = animator:LoadAnimation(animation)
+	track.Priority = priority or Enum.AnimationPriority.Action
+	track:Play()
 
+	if returnTrack then
+		return track
+	end
 end
 
 return AnimationController

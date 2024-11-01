@@ -2,11 +2,23 @@
 --//MODULES
 local Types = {}
 
-export type Dumbell = {
+export type Hero = {
     Name: string,
-    Bonus: number,
-    ImageId: number,
-    MinimumStrength: number
+    Speed: number,
+    DelayBetweenHits: number,
+    DistanceToHit: number,
+    Damage: number,
+    Cost: number,
+    Health: number,
+}
+
+export type Monster = {
+    Name: string,
+    Speed: number,
+    DelayBetweenHits: number,
+    DistanceToHit: number,
+    Damage: number,
+    Health: number,
 }
 
 return Types
